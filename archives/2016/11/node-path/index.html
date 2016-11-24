@@ -1,0 +1,961 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Node.js,Path,URL, Javascript, Web, 前端开发, RIA, FE, js, 脚本语言, ECMAScript, Node, DOM, XML, Mobile" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="思考与记录" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Node.js提供了一组非常方便的API专门用来操作路径。不过当你翻开Node.js手册关于path模块的时候，开头那个大大的章节标题”Windows vs. POSIX“呈现在你的面前，不知道你是什么感觉？反正我是觉得蛋疼乳酸菊花紧，兼容问题到哪都逃不掉啊！ Win32以及类Unix的POSIX标准在路径上真心差距很大，这个只要玩过windows以及类Unix系统的人都知道，许多代码由于路径兼容">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Node.js - path模块">
+<meta property="og:url" content="https://bennyzheng.github.io/archives/2016/11/node-path/index.html">
+<meta property="og:site_name" content="思考与记录">
+<meta property="og:description" content="Node.js提供了一组非常方便的API专门用来操作路径。不过当你翻开Node.js手册关于path模块的时候，开头那个大大的章节标题”Windows vs. POSIX“呈现在你的面前，不知道你是什么感觉？反正我是觉得蛋疼乳酸菊花紧，兼容问题到哪都逃不掉啊！ Win32以及类Unix的POSIX标准在路径上真心差距很大，这个只要玩过windows以及类Unix系统的人都知道，许多代码由于路径兼容">
+<meta property="og:updated_time" content="2016-11-24T14:18:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Node.js - path模块">
+<meta name="twitter:description" content="Node.js提供了一组非常方便的API专门用来操作路径。不过当你翻开Node.js手册关于path模块的时候，开头那个大大的章节标题”Windows vs. POSIX“呈现在你的面前，不知道你是什么感觉？反正我是觉得蛋疼乳酸菊花紧，兼容问题到哪都逃不掉啊！ Win32以及类Unix的POSIX标准在路径上真心差距很大，这个只要玩过windows以及类Unix系统的人都知道，许多代码由于路径兼容">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 'undefined',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bennyzheng.github.io/archives/2016/11/node-path/"/>
+
+
+
+
+
+  <title> Node.js - path模块 | 思考与记录 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">思考与记录</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">有时候停下来思考，然后拿起笔记录。</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archives/2016/11/node-path/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="benny zheng">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/face.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="思考与记录">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Node.js - path模块
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-18T00:00:00+08:00">
+                2016年11月18日
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              <span class="post-meta-item-text">更新于</span>
+              <time title="更新于" itemprop="dateModified" datetime="2016-11-24T22:18:46+08:00">
+                2016年11月24日
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Node-js学习笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">Node.js学习笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/archives/2016/11/node-path/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="/archives/2016/11/node-path/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Node.js提供了一组非常方便的API专门用来操作路径。不过当你翻开Node.js手册关于path模块的时候，开头那个大大的章节标题”<strong>Windows vs. POSIX</strong>“呈现在你的面前，不知道你是什么感觉？反正我是觉得蛋疼乳酸菊花紧，兼容问题到哪都逃不掉啊！<br> Win32以及类Unix的POSIX标准在路径上真心差距很大，这个只要玩过windows以及类Unix系统的人都知道，许多代码由于路径兼容问题直接无法跨平台使用。<br><a id="more"></a></p>
+<h1 id="不同平台的路径差异"><a href="#不同平台的路径差异" class="headerlink" title="不同平台的路径差异"></a>不同平台的路径差异</h1><p>路径格式在大多数平台上都是POSIX标准格式，文件系统的根目录为/，然后各种设备（包括多个磁盘也一样）以它为根目录挂载为某个路径，因此任何目录在整个文件系统中的绝对路径都是一致的。</p>
+<p>Windows与POSIX不同，它将磁盘分为多个区，它们并没有一个统一的根目录，比如C盘的根目录是C:\，D盘的根目录是D:\，如果你在D盘使用了/来代表根目录，那么它指的就是D:\。</p>
+<p>Windows与POSIX在文件、目录名的命名上也略有不同，早期FAT16系统采用的是8.3命名方式，文件名最多8个字符，再加一个.以及最多3个字符的扩展名，比如”filename.ext”，后来win95开始才开始有了长文件名，但也是问题很多。不过我们现在基本上不需要关注短文件名以及长文件名，需要特别关注的是路径分隔符。在Windows的路径中分隔一个目录或文件的采用了\，而POSIX采用的是/，事实上Windows同样认识/分隔符（我宁愿它干脆不认识，净给人添麻烦）。</p>
+<p>或许许多前端工程师没关注过什么叫POSIX，简单来说类Unix的系统（linux、BSD、OSX、Unix……）都是遵守POSIX规范的，这里引用一下百度百科对其做说明：</p>
+<blockquote>
+<p>POSIX表示可移植操作系统接口（Portable Operating System Interface ，缩写为 POSIX ），POSIX标准定义了操作系统应该为应用程序提供的接口标准，是IEEE为要在各种UNIX操作系统上运行的软件而定义的一系列API标准的总称，其正式称呼为IEEE 1003，而国际标准名称为ISO/IEC 9945。<br>POSIX标准意在期望获得源代码级别的软件可移植性。换句话说，为一个POSIX兼容的操作系统编写的程序，应该可以在任何其它的POSIX操作系统（即使是来自另一个厂商）上编译执行。<br>POSIX 并不局限于 UNIX。许多其它的操作系统，例如 DEC OpenVMS 支持 POSIX 标准，尤其是 IEEE Std. 1003.1-1990（1995 年修订）或 POSIX.1，POSIX.1 提供了源代码级别的 C 语言应用编程接口（API）给操作系统的服务程序，例如读写文件。POSIX.1 已经被国际标准化组织（International Standards Organization，ISO）所接受，被命名为 ISO/IEC 9945-1:1990 标准。</p>
+</blockquote>
+<p>编写一个路径在POSIX和Windows下可以分别这么写：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> winUrl = <span class="string">"d:\\wwwroot\\site\\file.ext"</span>;</div><div class="line"><span class="keyword">var</span> posixUrl = <span class="string">"/wwwroot/site/file.ext"</span>;</div></pre></td></tr></table></figure>
+<p>posixUrl在windows下同样认识，但它的位置取决于file.ext文件在哪个分区，如果它在C盘，那么它就相当于”c:\wwwroot\site\file.ext”，如果在其它盘就得换盘符。</p>
+<p>为了处理这类不同路径规范，path模块提供了两种实现：</p>
+<ul>
+<li>path.win32 - 强制使用windows的路径规范处理路径</li>
+<li>path.posix - 强制使用posix的路径规范处理路径，根据我的实验，貌似这就是默认的处理方式。</li>
+</ul>
+<h1 id="path模块的方法"><a href="#path模块的方法" class="headerlink" title="path模块的方法"></a>path模块的方法</h1><p>Node.js的path模块针对上述路径差异也提供了相应的API或属性，个人认为，尽可能不要使用windows的路径写法。</p>
+<h2 id="path-basename-path-ext"><a href="#path-basename-path-ext" class="headerlink" title="path.basename(path[, ext])"></a>path.basename(path[, ext])</h2><p>basename函数可以把路径最后一部份的名字返回，同时你如果使用了扩展名参数，它将自动将扩展名去掉，仅返回文件名（如果最后一部份是文件名的话）。</p>
+<p>这里需要注意的是路径最后一部份是否必须是文件，如果是目录怎么办？请看示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">"path"</span>);</div><div class="line"><span class="keyword">var</span> url = <span class="string">"/wwwroot/site/myfile.js"</span>;</div><div class="line"></div><div class="line"><span class="comment">// myfile.js</span></div><div class="line"><span class="built_in">console</span>.log(path.basename(url));</div><div class="line"></div><div class="line"><span class="comment">// myfile，要特别注意的是：扩展名包含这个"."，如果仅传"js"的话，将得到"myfile."！</span></div><div class="line"><span class="built_in">console</span>.log(path.basename(url, <span class="string">".js"</span>));</div><div class="line"></div><div class="line"><span class="comment">// myfile到底是目录还是文件？</span></div><div class="line">url = <span class="string">"/wwwroot/site/myfile"</span>;</div><div class="line"></div><div class="line"><span class="comment">// myfile，可见在这种情况下，它确实不在乎</span></div><div class="line"><span class="built_in">console</span>.log(path.basename(url));</div><div class="line"></div><div class="line"><span class="comment">// 如果路径最后一部份还带了个/呢？</span></div><div class="line">url = <span class="string">"/wwwroot/site/myfile/"</span>;</div><div class="line"></div><div class="line"><span class="comment">// 同样是myfile！这点要特别注意！</span></div><div class="line"><span class="built_in">console</span>.log(path.basename(url));</div></pre></td></tr></table></figure>
+<p>之前提到过windows以及POSIX的区别，那么如果路径是一个windows路径，它又是如何工作的？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> url = <span class="string">"E:\\wwwroot\\mysite\\myfile.js"</span>;</div><div class="line"></div><div class="line"><span class="comment">// 将得到 E:\wwwroot\mysite\myfile.js</span></div><div class="line"><span class="built_in">console</span>.log(path.basename(url));</div></pre></td></tr></table></figure>
+<p>从运行结果可见，API默认是使用了POSIX，这也难怪，微软本来就是喜欢出一些东西自己玩，不受人待见很正常，但如果你确认你的路径是windows的路径格式，可以使用path.win32提供的同名API：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> url = <span class="string">"E:\\wwwroot\\mysite\\myfile.js"</span>;</div><div class="line"></div><div class="line"><span class="comment">// 将得到 myfile.js</span></div><div class="line"><span class="built_in">console</span>.log(path.win32.basename(url));</div></pre></td></tr></table></figure>
+<h2 id="path-dirname-path"><a href="#path-dirname-path" class="headerlink" title="path.dirname(path)"></a>path.dirname(path)</h2><p>获取指定路径的目录名，它默认将basename当成文件名处理，也就是获取除了路径最后一部份之前的那一段路径。</p>
+<p>与basename有个同样的疑问，如果路径最后一个字符是/，也就是路径最后一部份其实也是目录名，那又该怎么样?继续试验：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">"path"</span>);</div><div class="line"><span class="keyword">var</span> url = <span class="string">"/wwwroot/site/myfile.js"</span>;</div><div class="line"></div><div class="line"><span class="comment">// /wwwroot/site 没什么奇怪的，唯一要注意的是最后不带/</span></div><div class="line"><span class="built_in">console</span>.log(path.dirname(url));</div><div class="line"></div><div class="line"><span class="comment">// 看看没扩展名的情况</span></div><div class="line">url = <span class="string">"/wwwroot/site/myfile"</span>;</div><div class="line"></div><div class="line"><span class="comment">// /wwwroot/site 它不在乎你有没有扩展名</span></div><div class="line"><span class="built_in">console</span>.log(path.dirname(url));</div><div class="line"></div><div class="line"><span class="comment">// 看看site本身也是目录的情况</span></div><div class="line">url = <span class="string">"/wwwroot/site/"</span>;</div><div class="line"></div><div class="line"><span class="comment">// /wwwroot 看来它不在乎最后是不是文件，如果最后一段是目录名，那么它就获取该目录所在的目录路径。</span></div><div class="line"><span class="built_in">console</span>.log(path.dirname(url));</div></pre></td></tr></table></figure>
+<h2 id="path-extname-path"><a href="#path-extname-path" class="headerlink" title="path.extname(path)"></a>path.extname(path)</h2><p>获取路径的扩展名。</p>
+<p>关于扩展名，其实在类Unix系统中，扩展名并不重要，比如你给一个文件加上可执行权限，那么它就会被认为是一个应用程序。如果你用GUI界面操作系统，扩展名的主要工作用于确定mime-type（当然可以造假），然后决定用什么应用程序来打开这个文件。</p>
+<p>扩展名是文件名后半部份，它的内容包含”.”，比如myfile.txt的扩展名是”.txt”。</p>
+<p>官方给的例子挺详细，直接上：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">path.extname(<span class="string">'index.html'</span>)</div><div class="line"><span class="comment">// returns '.html'</span></div><div class="line"></div><div class="line">path.extname(<span class="string">'index.coffee.md'</span>)</div><div class="line"><span class="comment">// returns '.md'</span></div><div class="line"></div><div class="line">path.extname(<span class="string">'index.'</span>)</div><div class="line"><span class="comment">// returns '.'</span></div><div class="line"></div><div class="line">path.extname(<span class="string">'index'</span>)</div><div class="line"><span class="comment">// returns ''</span></div><div class="line"></div><div class="line">path.extname(<span class="string">'.index'</span>)</div><div class="line"><span class="comment">// returns '' 这个要特别注意一下！扩展名可以没有，但文件名不能省。</span></div></pre></td></tr></table></figure>
+<p>很幸福的，这个函数在windows系统下表现与POSIX一致。</p>
+<h2 id="path-format-pathObject"><a href="#path-format-pathObject" class="headerlink" title="path.format(pathObject)"></a>path.format(pathObject)</h2><p>格式化一个pathObject，将其转成一个合法的字符串。pathObject可以拥有以下属性：</p>
+<ul>
+<li>dir - 目录路径，这个路径最后不要带有/，否则会出现使用//来分隔目录的情况</li>
+<li>root - 根目录</li>
+<li>base - 文件名+扩展名</li>
+<li>name - 文件名</li>
+<li>ext - 扩展名</li>
+</ul>
+<p>从手册描述上来看，格式化函数其实是个很弱智的函数，它仅仅是按一个简单的规则将这个pathObject定义的各个属性拼装起来成为一个字符串罢了，基本上遵守以下规则：</p>
+<ul>
+<li>path分为两个部份，一个是路径，对应dir以及root。一个是文件名，对应base、name以及ext。</li>
+<li>dir/root是互斥的，如果dir存在，则不会管root，路径部份以dir为准。</li>
+<li>base与name+ext是互斥的，如果base存在，则无视name以及ext，以base为准，也就是说base等于name+ext。</li>
+</ul>
+<p>为了更好的了解这个规则，继续上代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">"path"</span>);</div><div class="line"></div><div class="line"><span class="comment">// 文件名为file.txt，dir和root同时存在</span></div><div class="line"><span class="keyword">var</span> pathObject = &#123;</div><div class="line">    <span class="attr">dir</span>: <span class="string">"."</span>,</div><div class="line">    <span class="attr">root</span>: <span class="string">"/"</span>,</div><div class="line">    <span class="attr">base</span>: <span class="string">"file.txt"</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// ./file.txt root被无视，结果等于dir + "/" + base</span></div><div class="line"><span class="built_in">console</span>.log(path.format(pathObject));</div><div class="line"></div><div class="line"><span class="comment">// 文件名为file.txt，只存在root</span></div><div class="line">pathObject = &#123;</div><div class="line">    <span class="attr">root</span>: <span class="string">"/"</span>,</div><div class="line">    <span class="attr">base</span>: <span class="string">"file.txt"</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// /file.txt 结果等于root + base</span></div><div class="line"><span class="built_in">console</span>.log(path.format(pathObject));</div><div class="line"></div><div class="line"><span class="comment">// 这里引出了一个疑问，根据上一次输出的结果，</span></div><div class="line"><span class="comment">// format不会给root和base之间添加/，那么如果root不是/，并且不以/结束会怎么样?</span></div><div class="line"><span class="comment">// 文件名为file.txt，只存在root，并且值为/wwwroot，它不以/结束</span></div><div class="line">pathObject = &#123;</div><div class="line">    <span class="attr">root</span>: <span class="string">"/wwwroot"</span>,</div><div class="line">    <span class="attr">base</span>: <span class="string">"file.txt"</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// /wwwrootfile.txt 囧啊，结果真的等于root + base，我早说它不智能了</span></div><div class="line"><span class="built_in">console</span>.log(path.format(pathObject));</div><div class="line"></div><div class="line"><span class="comment">// 同样，dir注明它被添到结果时，会在后边跟一个/隔开文件名</span></div><div class="line"><span class="comment">// 文件名为file.txt，只存在dir，并且值以/结尾</span></div><div class="line">pathObject = &#123;</div><div class="line">    <span class="attr">dir</span>: <span class="string">"/wwwroot/"</span>,</div><div class="line">    <span class="attr">base</span>: <span class="string">"file.txt"</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// /wwwroot//file.txt 只能微笑一下了</span></div><div class="line"><span class="built_in">console</span>.log(path.format(pathObject));</div><div class="line"></div><div class="line"><span class="comment">// 我们如果故意把base的值瞎搞，它不是一个文件名，而是一段路径，会怎么样？</span></div><div class="line"><span class="comment">// 文件名为/dir/file.txt，root为/wwwroot，我怀疑结果将是/wwwroot/dir/file.txt</span></div><div class="line">pathObject = &#123;</div><div class="line">    <span class="attr">root</span>: <span class="string">"/wwwroot"</span>,</div><div class="line">    <span class="attr">base</span>: <span class="string">"/dir/file.txt"</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// /wwwroot/dir/file.txt 如我所料</span></div><div class="line"><span class="built_in">console</span>.log(path.format(pathObject));</div><div class="line"></div><div class="line"><span class="comment">// 如果dir存在相对路径呢？比如/wwwroot/dir/..相当于/wwwroot，那么是否会处理？</span></div><div class="line">pathObject = &#123;</div><div class="line">    <span class="attr">dir</span>: <span class="string">"/wwwroot/dir/.."</span>,</div><div class="line">    <span class="attr">base</span>: <span class="string">"file.txt"</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// /wwwroot/dir/../file.txt 真的仅仅是拼接一下，其实这事我也能干啊</span></div><div class="line"><span class="built_in">console</span>.log(path.format(pathObject));</div><div class="line"></div><div class="line"><span class="comment">// base与name和ext同时存在的情况</span></div><div class="line">pathObject = &#123;</div><div class="line">    <span class="attr">dir</span>: <span class="string">"/wwwroot"</span>,</div><div class="line">    <span class="attr">base</span>: <span class="string">"file.txt"</span>,</div><div class="line">    <span class="attr">name</span>: <span class="string">"myfile"</span>,</div><div class="line">    <span class="attr">ext</span>: <span class="string">".js"</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// /wwwroot/file.txt 以base为准，name和ext被无视掉了，其它规则跟dir/root一样狗血。</span></div><div class="line"><span class="built_in">console</span>.log(path.format(pathObject));</div></pre></td></tr></table></figure>
+<p>虽然path.format是如此弱智，但还是有办法补救的，我们还有一个path.normalize可以用来对它做处理。</p>
+<h2 id="path-isAbsolute-path"><a href="#path-isAbsolute-path" class="headerlink" title="path.isAbsolute(path)"></a>path.isAbsolute(path)</h2><p>判断路径是否为绝对路径，这里同样存在兼容问题，由于API默认以POSIX标准为准，因此如果路径是一个windows规范路径，那么需要使用path.win32.isAbsolute来做判断，所以千万不要随便使用windows规范的路径。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">"path"</span>);</div><div class="line"></div><div class="line"><span class="comment">// POSIX</span></div><div class="line"><span class="keyword">var</span> url = <span class="string">"/wwwroot/dir"</span>;</div><div class="line"><span class="comment">// true</span></div><div class="line"><span class="built_in">console</span>.log(path.isAbsolute(url));</div><div class="line"></div><div class="line"><span class="comment">// WIN</span></div><div class="line">url = <span class="string">"E:\\wwwroot"</span>;</div><div class="line"><span class="comment">// false</span></div><div class="line"><span class="built_in">console</span>.log(path.isAbsolute(url));</div><div class="line"><span class="comment">// true</span></div><div class="line"><span class="built_in">console</span>.log(path.win32.isAbsolute(url));</div></pre></td></tr></table></figure>
+<h2 id="path-join-…paths"><a href="#path-join-…paths" class="headerlink" title="path.join([…paths])"></a>path.join([…paths])</h2><p>将多个路径连接在一起，它相对于path.format来说非常智能，你不用担心它生成的路径会出现”//“，也不用担心各种弱智的表现，唯一要考虑的是你输入的路径应该是个字符串。</p>
+<p>没什么特别注意的，只需要知道它很智能，能够识别.以及..之类的相对路径，并且把它们拼装成一个很好的路径即可。这是来自官方手册的例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">path.join(<span class="string">'/foo'</span>, <span class="string">'bar'</span>, <span class="string">'baz/asdf'</span>, <span class="string">'quux'</span>, <span class="string">'..'</span>)</div><div class="line"><span class="comment">// returns '/foo/bar/baz/asdf'</span></div><div class="line"></div><div class="line">path.join(<span class="string">'foo'</span>, &#123;&#125;, <span class="string">'bar'</span>)</div><div class="line"><span class="comment">// throws TypeError: Arguments to path.join must be strings</span></div></pre></td></tr></table></figure>
+<h2 id="path-normalize-path"><a href="#path-normalize-path" class="headerlink" title="path.normalize(path)"></a>path.normalize(path)</h2><p>在体验过path.format之后，我们需要一个函数对它生成的可能乱七八糟的路径做整理，使其变成一个很规范没有冗余字符的路径，path.normalize就是一个很好的选择。它能够识别.以及..，同时也能够帮你去除多余的/，有点不足的是它不识别windows路径分隔符\。</p>
+<p>如果你使用的是win32的normalize，它将会把所有的/转化成\。建议在做处理之前先手工做一下替换，将\统一转成/。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">"path"</span>);</div><div class="line"></div><div class="line"><span class="comment">// 乱七八糟的路径</span></div><div class="line"><span class="keyword">var</span> url = <span class="string">"/wwwroot\\dir0/dir1//.././myfile.txt"</span>;</div><div class="line"></div><div class="line"><span class="comment">// /wwwroot\dir0/myfile.txt</span></div><div class="line"><span class="built_in">console</span>.log(path.normalize(url));</div><div class="line"></div><div class="line"><span class="comment">// \wwwroot\dir0\myfile.txt</span></div><div class="line"><span class="built_in">console</span>.log(path.win32.normalize(url));</div><div class="line"></div><div class="line"><span class="comment">// /wwwroot/dir0/myfile.txt 正解！</span></div><div class="line"><span class="built_in">console</span>.log(path.normalize(url.replace(<span class="regexp">/\\/g</span>, <span class="string">"/"</span>)));</div></pre></td></tr></table></figure>
+<h2 id="path-parse-path"><a href="#path-parse-path" class="headerlink" title="path.parse(path)"></a>path.parse(path)</h2><p>将一个合法路径解析成一个pathObject，格式参考format函数。<br>这个方法同样不怎么智能，建议使用它的时候先做一下处理（请参考path.normalize示例代码）。</p>
+<p>下面来看看它工作表现：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">"path"</span>);</div><div class="line"></div><div class="line"><span class="comment">// 乱七八糟的路径</span></div><div class="line"><span class="keyword">var</span> url = <span class="string">"/wwwroot\\dir0/dir1//.././myfile.txt"</span>;</div><div class="line"></div><div class="line"><span class="comment">// &#123;</span></div><div class="line"><span class="comment">//     root: '/',</span></div><div class="line"><span class="comment">//     dir: '/wwwroot\\dir0/dir1//../.',</span></div><div class="line"><span class="comment">//     base: 'myfile.txt',</span></div><div class="line"><span class="comment">//     ext: '.txt',</span></div><div class="line"><span class="comment">//     name: 'myfile'</span></div><div class="line"><span class="comment">// &#125;</span></div><div class="line"><span class="built_in">console</span>.log(path.parse(url));</div><div class="line"></div><div class="line"><span class="comment">// &#123;</span></div><div class="line"><span class="comment">//     root: '/',</span></div><div class="line"><span class="comment">//     dir: '/wwwroot\\dir0/dir1//../.',</span></div><div class="line"><span class="comment">//     base: 'myfile.txt',</span></div><div class="line"><span class="comment">//     ext: '.txt',</span></div><div class="line"><span class="comment">//     name: 'myfile'</span></div><div class="line"><span class="comment">// &#125;</span></div><div class="line"><span class="built_in">console</span>.log(path.win32.parse(url));</div><div class="line"></div><div class="line"><span class="comment">// &#123;</span></div><div class="line"><span class="comment">//     root: '/',</span></div><div class="line"><span class="comment">//     dir: '/wwwroot/dir0/dir1//../.',</span></div><div class="line"><span class="comment">//     base: 'myfile.txt',</span></div><div class="line"><span class="comment">//     ext: '.txt',</span></div><div class="line"><span class="comment">//     name: 'myfile'</span></div><div class="line"><span class="comment">// &#125;</span></div><div class="line"><span class="built_in">console</span>.log(path.parse(url.replace(<span class="regexp">/\\/g</span>, <span class="string">"/"</span>)));</div><div class="line"></div><div class="line"><span class="comment">// 正解！</span></div><div class="line"><span class="comment">// &#123;</span></div><div class="line"><span class="comment">//     root: '/',</span></div><div class="line"><span class="comment">//     dir: '/wwwroot/dir0',</span></div><div class="line"><span class="comment">//     base: 'myfile.txt',</span></div><div class="line"><span class="comment">//     ext: '.txt',</span></div><div class="line"><span class="comment">//     name: 'myfile'</span></div><div class="line"><span class="comment">// &#125;</span></div><div class="line"><span class="built_in">console</span>.log(path.parse(path.normalize(url.replace(<span class="regexp">/\\/g</span>, <span class="string">"/"</span>))));</div></pre></td></tr></table></figure>
+<h2 id="path-relative-from-to"><a href="#path-relative-from-to" class="headerlink" title="path.relative(from, to)"></a>path.relative(from, to)</h2><p>获取to参数相对于from参数的相对路径。</p>
+<p>这个函数没什么特别好注意的，只需要注意它同样有windows的兼容性问题即可。</p>
+<p>以下是官方示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">path.relative(<span class="string">'/data/orandea/test/aaa'</span>, <span class="string">'/data/orandea/impl/bbb'</span>)</div><div class="line"><span class="comment">// returns '../../impl/bbb'</span></div></pre></td></tr></table></figure>
+<h2 id="path-resolve-…paths"><a href="#path-resolve-…paths" class="headerlink" title="path.resolve([…paths])"></a>path.resolve([…paths])</h2><p>这个函数与path.join非常相似，但它将会得到一个绝对路径，并且该路径是基于磁盘文件系统的，得到的结果与当前工作目录有关。</p>
+<p>假设我当前工作目录在/wwwroot/github/bennyzheng.github.io/_posts/2016/（是真的……我的测试脚本就放在这个目录），那么以下代码将会得到相应的结果：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> path = <span class="built_in">require</span>(<span class="string">"path"</span>);</div><div class="line"></div><div class="line"><span class="comment">// /wwwroot/github/bennyzheng.github.io/_posts/2016/myfile</span></div><div class="line"><span class="built_in">console</span>.log(path.resolve(<span class="string">"./"</span>, <span class="string">"myfile"</span>));</div><div class="line"></div><div class="line"><span class="comment">// 注意第二个参数是以/开头，前边的./dir直接被无视掉了，因为它这里已经直接确定好根目录了</span></div><div class="line"><span class="comment">// /myfile</span></div><div class="line"><span class="built_in">console</span>.log(path.resolve(<span class="string">"./dir"</span>, <span class="string">"/myfile"</span>));</div></pre></td></tr></table></figure>
+<h1 id="path模块的属性"><a href="#path模块的属性" class="headerlink" title="path模块的属性"></a>path模块的属性</h1><h2 id="path-delimiter"><a href="#path-delimiter" class="headerlink" title="path.delimiter"></a>path.delimiter</h2><p>保存了当前系统下多个路径的分隔符，它的值在windows系统下是;，在POSIX规范的系统下是:。<br>如果不理解，请查看当前系统的系统变量PATH的值，它就是多个路径连接在一起的。</p>
+<p>上一下官方手册的示例代码，它演示了如何利用该属性将系统变量PATH分隔成多个路径，示例中的PATH变量明显是POSIX风格：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.log(process.env.PATH)</div><div class="line"><span class="comment">// '/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin'</span></div><div class="line"></div><div class="line">process.env.PATH.split(path.delimiter)</div><div class="line"><span class="comment">// returns ['/usr/bin', '/bin', '/usr/sbin', '/sbin', '/usr/local/bin']</span></div></pre></td></tr></table></figure>
+<h2 id="path-sep"><a href="#path-sep" class="headerlink" title="path.sep"></a>path.sep</h2><p>保存了当前系统下使用的目录分隔符，它的值在windows下是\，在POSIX规范的系统下是/。</p>
+<h2 id="path-posix"><a href="#path-posix" class="headerlink" title="path.posix"></a>path.posix</h2><p>提供了一套针对遵守posix规范的系统的API支持，从目前的试验来看，我们完全可以使用path.xxx来调用API，因为path.posix就是默认的方式。</p>
+<h2 id="path-win32"><a href="#path-win32" class="headerlink" title="path.win32"></a>path.win32</h2><p>提供了一套针对windows系统的API支持，考虑到可移植性，强烈建议不要在你的程序中使用。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Node-js/" rel="tag"># Node.js</a>
+          
+            <a href="/tags/Path/" rel="tag"># Path</a>
+          
+            <a href="/tags/URL/" rel="tag"># URL</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/archives/2016/11/explore-data-stream/" rel="next" title="Node.js - 探索数据流">
+                <i class="fa fa-chevron-left"></i> Node.js - 探索数据流
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/archives/2016/11/node-url/" rel="prev" title="Node.js - url模块">
+                Node.js - url模块 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="/archives/2016/11/node-path/"
+     data-title="Node.js - path模块"
+     data-content=""
+     data-url="https://bennyzheng.github.io//archives/2016/11/node-path/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  <p>热评文章</p>
+  <div class="ds-top-threads" data-range="weekly" data-num-items="4"></div>
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="/archives/2016/11/node-path/"
+           data-title="Node.js - path模块" data-url="https://bennyzheng.github.io//archives/2016/11/node-path/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/face.png"
+               alt="benny zheng" />
+          <p class="site-author-name" itemprop="name">benny zheng</p>
+          <p class="site-description motion-element" itemprop="description">一名前端开发工程师，曾在新浪中国以及YY语音写过几年代码，现在在深圳泰久继续写代码。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/bennyzheng" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/qihontin" target="_blank" title="新浪微博">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  新浪微博
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#不同平台的路径差异"><span class="nav-number">1.</span> <span class="nav-text">不同平台的路径差异</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#path模块的方法"><span class="nav-number">2.</span> <span class="nav-text">path模块的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#path-basename-path-ext"><span class="nav-number">2.1.</span> <span class="nav-text">path.basename(path[, ext])</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-dirname-path"><span class="nav-number">2.2.</span> <span class="nav-text">path.dirname(path)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-extname-path"><span class="nav-number">2.3.</span> <span class="nav-text">path.extname(path)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-format-pathObject"><span class="nav-number">2.4.</span> <span class="nav-text">path.format(pathObject)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-isAbsolute-path"><span class="nav-number">2.5.</span> <span class="nav-text">path.isAbsolute(path)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-join-…paths"><span class="nav-number">2.6.</span> <span class="nav-text">path.join([…paths])</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-normalize-path"><span class="nav-number">2.7.</span> <span class="nav-text">path.normalize(path)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-parse-path"><span class="nav-number">2.8.</span> <span class="nav-text">path.parse(path)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-relative-from-to"><span class="nav-number">2.9.</span> <span class="nav-text">path.relative(from, to)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-resolve-…paths"><span class="nav-number">2.10.</span> <span class="nav-text">path.resolve([…paths])</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#path模块的属性"><span class="nav-number">3.</span> <span class="nav-text">path模块的属性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#path-delimiter"><span class="nav-number">3.1.</span> <span class="nav-text">path.delimiter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-sep"><span class="nav-number">3.2.</span> <span class="nav-text">path.sep</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-posix"><span class="nav-number">3.3.</span> <span class="nav-text">path.posix</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-win32"><span class="nav-number">3.4.</span> <span class="nav-text">path.win32</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">benny zheng</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"bennyzheng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
