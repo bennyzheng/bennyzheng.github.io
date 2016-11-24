@@ -17,8 +17,8 @@
   
   <entry>
     <title>数据存储方式 - endian</title>
-    <link href="https://bennyzheng.github.io//archivers/2016/11/endian/"/>
-    <id>https://bennyzheng.github.io//archivers/2016/11/endian/</id>
+    <link href="https://bennyzheng.github.io//archivers/2016/11/endian"/>
+    <id>https://bennyzheng.github.io//archivers/2016/11/endian</id>
     <published>2016-11-22T16:00:00.000Z</published>
     <updated>2016-11-24T14:18:01.000Z</updated>
     
@@ -64,8 +64,8 @@
   
   <entry>
     <title>缓冲数组以及数据视图</title>
-    <link href="https://bennyzheng.github.io//archivers/2016/11/arraybuffer-and-dataview/"/>
-    <id>https://bennyzheng.github.io//archivers/2016/11/arraybuffer-and-dataview/</id>
+    <link href="https://bennyzheng.github.io//archivers/2016/11/arraybuffer-and-dataview"/>
+    <id>https://bennyzheng.github.io//archivers/2016/11/arraybuffer-and-dataview</id>
     <published>2016-11-20T16:00:00.000Z</published>
     <updated>2016-11-24T15:47:08.000Z</updated>
     
@@ -257,8 +257,8 @@
   
   <entry>
     <title>Node.js - buffer模块</title>
-    <link href="https://bennyzheng.github.io//archivers/2016/11/node-buffer/"/>
-    <id>https://bennyzheng.github.io//archivers/2016/11/node-buffer/</id>
+    <link href="https://bennyzheng.github.io//archivers/2016/11/node-buffer"/>
+    <id>https://bennyzheng.github.io//archivers/2016/11/node-buffer</id>
     <published>2016-11-19T16:00:00.000Z</published>
     <updated>2016-11-24T14:19:14.000Z</updated>
     
@@ -371,8 +371,8 @@
   
   <entry>
     <title>Node.js - url模块</title>
-    <link href="https://bennyzheng.github.io//archivers/2016/11/node-url/"/>
-    <id>https://bennyzheng.github.io//archivers/2016/11/node-url/</id>
+    <link href="https://bennyzheng.github.io//archivers/2016/11/node-url"/>
+    <id>https://bennyzheng.github.io//archivers/2016/11/node-url</id>
     <published>2016-11-19T16:00:00.000Z</published>
     <updated>2016-11-24T14:18:50.000Z</updated>
     
@@ -437,8 +437,8 @@
   
   <entry>
     <title>Node.js - path模块</title>
-    <link href="https://bennyzheng.github.io//archivers/2016/11/node-path/"/>
-    <id>https://bennyzheng.github.io//archivers/2016/11/node-path/</id>
+    <link href="https://bennyzheng.github.io//archivers/2016/11/node-path"/>
+    <id>https://bennyzheng.github.io//archivers/2016/11/node-path</id>
     <published>2016-11-17T16:00:00.000Z</published>
     <updated>2016-11-24T14:18:46.000Z</updated>
     
@@ -537,8 +537,8 @@
   
   <entry>
     <title>Node.js - 探索数据流</title>
-    <link href="https://bennyzheng.github.io//archivers/2016/11/explore-data-stream/"/>
-    <id>https://bennyzheng.github.io//archivers/2016/11/explore-data-stream/</id>
+    <link href="https://bennyzheng.github.io//archivers/2016/11/explore-data-stream"/>
+    <id>https://bennyzheng.github.io//archivers/2016/11/explore-data-stream</id>
     <published>2016-11-15T16:00:00.000Z</published>
     <updated>2016-11-24T14:19:18.000Z</updated>
     
@@ -698,9 +698,9 @@
     
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
-      <category term="Stream" scheme="https://bennyzheng.github.io/tags/Stream/"/>
-    
       <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
+    
+      <category term="Stream" scheme="https://bennyzheng.github.io/tags/Stream/"/>
     
   </entry>
   
