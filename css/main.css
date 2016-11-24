@@ -1682,7 +1682,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #875dff;
+  background: #4b9f2a;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -2829,4 +2829,14 @@ body {
 }
 .site-description {
   align: left;
+}
+.site-author-image {
+  border-radius: 5%;
+}
+.site-description {
+  text-align: left;
+}
+.site-meta,
+.headband {
+  background-color: rgba(34,34,34,0.7);
 }

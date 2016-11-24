@@ -67,7 +67,7 @@
     <link href="https://bennyzheng.github.io//archivers/2016/11/arraybuffer-and-dataview/"/>
     <id>https://bennyzheng.github.io//archivers/2016/11/arraybuffer-and-dataview/</id>
     <published>2016-11-20T16:00:00.000Z</published>
-    <updated>2016-11-24T15:47:08.000Z</updated>
+    <updated>2016-11-24T17:22:58.000Z</updated>
     
     <content type="html"><![CDATA[<p>Javascript在数据的处理上一直不是强项，比如数字不分整型和浮点数统一使用了64位浮点数，如果涉及到二进制运算则显得非常无力，在数据传输上也非常浪费带宽。在ES6针对Javascript二进制数据处理上的无力引入了原始缓冲区ArrayBuffer，并且还提供了多种位数的int类型数组以及数据视图来处理数据。<br><a id="more"></a></p>
 <h1 id="ArrayBuffer"><a href="#ArrayBuffer" class="headerlink" title="ArrayBuffer"></a>ArrayBuffer</h1><p>ArrayBuffer是ES6新引入的用于处理二进制数组的缓冲区对象，它不提供对数据的操作能力，提供的是二进制数据的存储。</p>
@@ -242,7 +242,7 @@
     
     </summary>
     
-      <category term="javascript" scheme="https://bennyzheng.github.io/categories/javascript/"/>
+      <category term="Javascript" scheme="https://bennyzheng.github.io/categories/Javascript/"/>
     
     
       <category term="TypeArray" scheme="https://bennyzheng.github.io/tags/TypeArray/"/>
@@ -698,9 +698,9 @@
     
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
-      <category term="Stream" scheme="https://bennyzheng.github.io/tags/Stream/"/>
-    
       <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
+    
+      <category term="Stream" scheme="https://bennyzheng.github.io/tags/Stream/"/>
     
   </entry>
   
