@@ -245,13 +245,13 @@
       <category term="Javascript" scheme="https://bennyzheng.github.io/categories/Javascript/"/>
     
     
+      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
+    
       <category term="TypeArray" scheme="https://bennyzheng.github.io/tags/TypeArray/"/>
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
       <category term="ArrayBuffer" scheme="https://bennyzheng.github.io/tags/ArrayBuffer/"/>
-    
-      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
   </entry>
   
@@ -361,9 +361,9 @@
       <category term="Javascript" scheme="https://bennyzheng.github.io/categories/Javascript/"/>
     
     
-      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
-    
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
+    
+      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
       <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
     
@@ -429,9 +429,9 @@
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
-    
       <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
+    
+      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
     
   </entry>
   
@@ -529,9 +529,9 @@
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
-    
       <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
+    
+      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
     
   </entry>
   
@@ -694,9 +694,9 @@
       <category term="Node.js学习笔记" scheme="https://bennyzheng.github.io/categories/Node-js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
-    
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
+    
+      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
       <category term="Stream" scheme="https://bennyzheng.github.io/tags/Stream/"/>
     
