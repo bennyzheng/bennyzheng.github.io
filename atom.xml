@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://bennyzheng.github.io/"/>
-  <updated>2016-11-25T18:33:32.000Z</updated>
+  <updated>2016-11-25T18:37:44.000Z</updated>
   <id>https://bennyzheng.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://bennyzheng.github.io/archivers/2016/11/event-loop-and-multi-thread/"/>
     <id>https://bennyzheng.github.io/archivers/2016/11/event-loop-and-multi-thread/</id>
     <published>2016-11-25T18:33:32.000Z</published>
-    <updated>2016-11-25T18:33:32.000Z</updated>
+    <updated>2016-11-25T18:37:44.000Z</updated>
     
     <content type="html"><![CDATA[<p>Javascript在浏览器中一直都是以单线程的方式运行，这意味着它同一时间只能干一件事，前端们不用担心你在读完一个变量的时候该变量马上被另一个线程修改而导致后续计算变得不准确，也不用担心对一个DOM节点做修改操作的时候突然它被删除。支持多线程的语言都有一个东西叫线程锁，但是Javascript作为操作HTML页面的脚本语言它应该足够简单，所以单线程是最合适的，但同样有方法实现多线程以提高系统资源利用率。<br><a id="more"></a></p>
 <h1 id="事件循环"><a href="#事件循环" class="headerlink" title="事件循环"></a>事件循环</h1><p>首先了解一下什么叫进程。进程就是一个应用程序在内存中的实例，一个CPU核心只能在同一时间处理一个进程的工作，操作系统同时在跑的应用程序当然不可能只有一个，所以操作系统就不停地把CPU资源交给其中一个进程，而其它没排到队的进程则进入沉睡状态。许多时候为了更好的利用起多核CPU的优势，一个进程往往会把自己fork成多个进程，让应用程序的工作能够同时在多个CPU上跑起来以达到利用更多CPU资源提高性能的目的，比如Node.js就是这么干的。</p>
@@ -81,7 +81,7 @@
 <h2 id="停止Worker"><a href="#停止Worker" class="headerlink" title="停止Worker"></a>停止Worker</h2><p>想要将一个Worker停止非常简单，worker对象提供了terminate方法，而Worker内部则可以调用close方法关闭本线程。</p>
 <h1 id="执行顺序"><a href="#执行顺序" class="headerlink" title="执行顺序"></a>执行顺序</h1><p>Worker允许加载一个同源的js文件作为它的执行代码，同时在Worker内部可以使用importScripts函数无限制地跨域加载js文件。由于加载js文件是需要时间的，在执行过程中它们是同步的还是异步的还需要进行实验：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">sleep(<span class="number">1</span>);</div><div class="line">header(<span class="string">'Content-Type: application/javascript'</span>);</div><div class="line"><span class="meta">?&gt;</span></div><div class="line">console.log(<span class="string">"worker load: %d"</span>, <span class="keyword">new</span> Date().getTime());</div><div class="line"></div><div class="line">addEventListener(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span><span class="params">(ev)</span> </span>&#123;</div><div class="line">    console.log(<span class="string">"worker accept: %s, time is %d"</span>, ev.data, <span class="keyword">new</span> Date().getTime());</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"worker create: %d"</span>, <span class="keyword">new</span> <span class="built_in">Date</span>().getTime());</div><div class="line">    <span class="keyword">var</span> worker = <span class="keyword">new</span> Worker(<span class="string">"./worker.php?t="</span> + <span class="keyword">new</span> <span class="built_in">Date</span>().getTime());</div><div class="line">    worker.postMessage(<span class="string">"here?"</span>)</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"master send: %d"</span>, <span class="keyword">new</span> <span class="built_in">Date</span>().getTime());</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.log(<span class="string">"worker create: %d"</span>, <span class="keyword">new</span> <span class="built_in">Date</span>().getTime());</div><div class="line"><span class="keyword">var</span> worker = <span class="keyword">new</span> Worker(<span class="string">"./worker.php?t="</span> + <span class="keyword">new</span> <span class="built_in">Date</span>().getTime());</div><div class="line">worker.postMessage(<span class="string">"here?"</span>)</div><div class="line"><span class="built_in">console</span>.log(<span class="string">"master send: %d"</span>, <span class="keyword">new</span> <span class="built_in">Date</span>().getTime());</div></pre></td></tr></table></figure>
 <p>worker.php文件先来了个sleep(1)睡眠了1秒才开始返回数据，也就是说Worker是至少1秒后才开始工作。而主线程在建立Worker之后马上发送一句”here?”并输出时间，现在看一下运行结果，令人惊讶：</p>
 <p>worker create: 1480097663629<br>master send: 1480097663631<br>worker load: 1480097664656<br>worker accept: here?, time is 1480097664660</p>
 <p>“worker create”与”master send”之间的时间间隔是2ms，也就是说几乎同时执行，证明建立一个Worker并不是同步操作。在1000ms后控制台出现”worker load”，证明Worker真的是1秒后才开始工作，但后边的”worker accept”却表示它接收到了”here?”。按常理来说消息是在Worker运行前一秒发的，当Worker开始运行时消息早已经丢失，因为在发送时没人接收，但事实上并非如此。</p>
@@ -356,72 +356,6 @@
   </entry>
   
   <entry>
-    <title>Node.js - url模块</title>
-    <link href="https://bennyzheng.github.io/archivers/2016/11/node-url/"/>
-    <id>https://bennyzheng.github.io/archivers/2016/11/node-url/</id>
-    <published>2016-11-19T16:00:00.000Z</published>
-    <updated>2016-11-24T14:18:50.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。<br><a id="more"></a></p>
-<h1 id="URL的结构"><a href="#URL的结构" class="headerlink" title="URL的结构"></a>URL的结构</h1><p>Node.js手册非常形象的使用了下方这张图片作为解读URL结构的示例，图中很清楚地为我们构造出一个完整的URL应该是长什么样的。</p>
-<p><img src="/images/2016/11/url.png" alt="Node.js的URL结构图"></p>
-<p>Node.js的url模块能够让工程师将一个URL字符串解析成一个对象，它拥有以下属性：</p>
-<ul>
-<li>href - 保存了完整的url地址。要特别注意的是它会将协议以及域名中的大写字母转成小写字母，至于其它位置的字符则会保持原样。这是因为协议以及域名是大小写不分的，为了方便直接全部都转成小写。</li>
-<li>protocol - 小写字母组成的协议类型，比如http:。要特别注意:也是协议的一部份（一直觉得很囧）。</li>
-<li>slashes - 一个布尔值，一般是true，它注明url的协议后边是否拥有两个/字符，有些奇葩URL是不带//的。</li>
-<li>host - 小写字母组成的域名+端口，二者之间有个冒号隔开。如果直接使用IP访问，那么host值就是IP地址，否则就是域名。另外，如果URL上没有写端口那么这里的值跟hostname一致。举个例子：www.host.com:8080。</li>
-<li>auth - URL中附带的认证信息，这个很少使用，毕竟不是很安全。当我们访问一个要求认证的网页时，服务器将会返回http状态码401要求浏览器提供用户认证信息，输入用户名和密码之后它将会在Http请求报文头中以Base64的方式写在Authorization字段中。你也可以使用类似”<a href="http://user:pass/host.com/a.php&quot;的方式直接将用户名和密码（密码可省略，照样弹出窗口让你输入）写在URL中。" target="_blank" rel="external">http://user:pass/host.com/a.php&quot;的方式直接将用户名和密码（密码可省略，照样弹出窗口让你输入）写在URL中。</a></li>
-<li>hostname - 域名，跟host不同的是它不带端口。</li>
-<li>port - 端口，如果没有该值会使用该协议默认端口，比如http(80)、https(443)、ftp(21)、sftp(22)。</li>
-<li>pathname - 请求路径名，它不包含search以及hash。</li>
-<li>search - 查询字符串，在URL表现为类似”?id=1”这种形式，要特别注意的是它包含问号(?)。</li>
-<li>path - 请求路径，它包含pathname以及search部份，比如”/a/b/c.php?id=1”。许多浏览器并不把URL上的hash部份带到服务器，hash部份一般用于标识本页的某个锚点，因此path这一块是会被附在请求头上送到服务器端。</li>
-<li>query - 查询参数，它与search不同之处在于它不带问号，比如”id=1&amp;name=2”。要特别注意的是，使用url.parse解析一个url的时候可以通过设置参数来决定是否对search做解析，如果将parseQueryString参数设置为true，query将会是一个对象，它用键值对的方式保存了search里包含的数据，比如{ id: 1, name: 2 }</li>
-<li>hash - 锚点，在URL处于末尾，由#号开始。在平时的网页URL中，浏览器一般不会将其发送到服务器端，它更多的是用在客户端。本意是用于做锚点，可以跳到页面某个特定位置，实际上现在更多的是用来做单页面的路由功能。举例：”#hash”。</li>
-</ul>
-<p>以下是一个完整的URL对象：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> urlObject = &#123;</div><div class="line">    <span class="attr">href</span>: <span class="string">"http://user:pass@host.com:8080/p/a/t/h?query=string#hash"</span>,</div><div class="line">    <span class="attr">protocol</span>: <span class="string">"http:"</span>,</div><div class="line">    <span class="attr">slashes</span>: <span class="literal">true</span>,</div><div class="line">    <span class="attr">auth</span>: <span class="string">'user:pass'</span>,</div><div class="line">    <span class="attr">host</span>: <span class="string">'host.com:8080'</span>,</div><div class="line">    <span class="attr">port</span>: <span class="string">'8080'</span>,</div><div class="line">    <span class="attr">hostname</span>: <span class="string">'host.com'</span>,</div><div class="line">    <span class="attr">hash</span>: <span class="string">'#hash'</span>,</div><div class="line">    <span class="attr">search</span>: <span class="string">'?query=string'</span>,</div><div class="line">    <span class="attr">query</span>: &#123; <span class="attr">query</span>: <span class="string">'string'</span> &#125;, <span class="comment">// 或者 "query=string"</span></div><div class="line">    pathname: <span class="string">'/p/a/t/h'</span>,</div><div class="line">    <span class="attr">path</span>: <span class="string">'/p/a/t/h?query=string'</span>,</div><div class="line">    <span class="attr">href</span>: <span class="string">'http://user:pass@host.com:8080/p/a/t/h?query=string#hash'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h1 id="URL模块API"><a href="#URL模块API" class="headerlink" title="URL模块API"></a>URL模块API</h1><p>URL模块仅提供了3个函数，没有提供类或者其它东西：</p>
-<ul>
-<li>url.format - 将一个包含必要字段的urlObject格式化成一个合法的URL字符串。</li>
-<li>url.parse - 将一个合法的URL字符串转成urlObject，注意URL并不需要包含所有的字段，比如”./“也算是一个URL字符串。</li>
-<li>url.resolve - 拥有from以及to两个参数，自动计算出to相对于from的绝对地址。如果from参数省略，则是将to转换为绝对路径。</li>
-</ul>
-<p>这三个函数除了url.resolve都比较容易理解，至于resolve，手册给出了相应的例子，也比较形象：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">url.resolve(<span class="string">'/one/two/three'</span>, <span class="string">'four'</span>)         <span class="comment">// '/one/two/four'</span></div><div class="line">url.resolve(<span class="string">'http://example.com/'</span>, <span class="string">'/one'</span>)    <span class="comment">// 'http://example.com/one'</span></div><div class="line">url.resolve(<span class="string">'http://example.com/one'</span>, <span class="string">'/two'</span>) <span class="comment">// 'http://example.com/two'</span></div></pre></td></tr></table></figure>
-<h1 id="小贴士"><a href="#小贴士" class="headerlink" title="小贴士"></a>小贴士</h1><ul>
-<li><p>弄清绝对路径的根目录在哪  </p>
-<p>在构建一个页面时为了方便可能会使用绝对路径，绝对路径是以/开头的路径，对绝对路径不大了解的前端可能会就发现直接在服务器上查看HTML文件时正常，但直接双击打开html文件则发生路径错误。这时需要认清这绝对路径的根目录到底是哪里。  </p>
-<p>假设我们的站点放在/wwwroot/mysite，访问地址是<a href="http://mysite.com，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。" target="_blank" rel="external">http://mysite.com，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。</a>  </p>
-<p>这时候访问<a href="http://mysite.com/index.html，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。" target="_blank" rel="external">http://mysite.com/index.html，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。</a>    </p>
-<p>这是因为在使用域名访问index.html时，绝对路径是指<a href="http://mysite.com/，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。" target="_blank" rel="external">http://mysite.com/，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。</a></p>
-</li>
-<li><p>查询字符串的编码  </p>
-<p>请求一个URL时许多人弄不清哪里需要编码哪里不需要编码，甚至还重复编码，这里特地做一下说明。另外，服务器端接收到你的值是不需要解码的，因为服务器本身就会帮你解码了。</p>
-</li>
-</ul>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 在发起请求的时候，queryString每个字段以及它的值都应该被编码，比如"/file?键1=值1&amp;键2=值2"应该这么写（也可以使用encodeURI，但url不能带search和hash部份）：  </span></div><div class="line"><span class="keyword">var</span> url = <span class="string">"/file?"</span> + <span class="built_in">encodeURIComponent</span>(<span class="string">"键1"</span>) + <span class="string">"="</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"值1"</span>) + <span class="string">"&amp;"</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"键2"</span>) + <span class="string">"="</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"值2"</span>);</div><div class="line"><span class="comment">// 当然，如果你确认你的key和value都不会有非ASCII字符以及需要转义的字符，你也可以不编码（如果不知道是否需要编码，一定要编码，有利无害）。另外，如果值是一个url,该url也需要做编码：  </span></div><div class="line"><span class="comment">// value本身是一个url，请对它的key和value编码。由于key的值是"key"，我确认它绝对不需要编码（因为encodeURIComponent("key")值同样是key），所以我就省掉了。</span></div><div class="line"><span class="keyword">var</span> value = <span class="string">"http://www.site.com/?key="</span> + <span class="built_in">encodeURIComponent</span>(<span class="string">"这是中文值"</span>);</div><div class="line"><span class="comment">// url的值为value的值，value的值也需要编码。</span></div><div class="line"><span class="keyword">var</span> url = <span class="string">"http://mysite.com/?url="</span> + <span class="built_in">encodeURIComponent</span>(value);</div></pre></td></tr></table></figure>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="Node.js学习笔记" scheme="https://bennyzheng.github.io/categories/Node-js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
-    
-      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
-    
-      <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
-    
-  </entry>
-  
-  <entry>
     <title>Node.js - buffer模块</title>
     <link href="https://bennyzheng.github.io/archivers/2016/11/node-buffer/"/>
     <id>https://bennyzheng.github.io/archivers/2016/11/node-buffer/</id>
@@ -532,6 +466,72 @@
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
       <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Node.js - url模块</title>
+    <link href="https://bennyzheng.github.io/archivers/2016/11/node-url/"/>
+    <id>https://bennyzheng.github.io/archivers/2016/11/node-url/</id>
+    <published>2016-11-19T16:00:00.000Z</published>
+    <updated>2016-11-24T14:18:50.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。<br><a id="more"></a></p>
+<h1 id="URL的结构"><a href="#URL的结构" class="headerlink" title="URL的结构"></a>URL的结构</h1><p>Node.js手册非常形象的使用了下方这张图片作为解读URL结构的示例，图中很清楚地为我们构造出一个完整的URL应该是长什么样的。</p>
+<p><img src="/images/2016/11/url.png" alt="Node.js的URL结构图"></p>
+<p>Node.js的url模块能够让工程师将一个URL字符串解析成一个对象，它拥有以下属性：</p>
+<ul>
+<li>href - 保存了完整的url地址。要特别注意的是它会将协议以及域名中的大写字母转成小写字母，至于其它位置的字符则会保持原样。这是因为协议以及域名是大小写不分的，为了方便直接全部都转成小写。</li>
+<li>protocol - 小写字母组成的协议类型，比如http:。要特别注意:也是协议的一部份（一直觉得很囧）。</li>
+<li>slashes - 一个布尔值，一般是true，它注明url的协议后边是否拥有两个/字符，有些奇葩URL是不带//的。</li>
+<li>host - 小写字母组成的域名+端口，二者之间有个冒号隔开。如果直接使用IP访问，那么host值就是IP地址，否则就是域名。另外，如果URL上没有写端口那么这里的值跟hostname一致。举个例子：www.host.com:8080。</li>
+<li>auth - URL中附带的认证信息，这个很少使用，毕竟不是很安全。当我们访问一个要求认证的网页时，服务器将会返回http状态码401要求浏览器提供用户认证信息，输入用户名和密码之后它将会在Http请求报文头中以Base64的方式写在Authorization字段中。你也可以使用类似”<a href="http://user:pass/host.com/a.php&quot;的方式直接将用户名和密码（密码可省略，照样弹出窗口让你输入）写在URL中。" target="_blank" rel="external">http://user:pass/host.com/a.php&quot;的方式直接将用户名和密码（密码可省略，照样弹出窗口让你输入）写在URL中。</a></li>
+<li>hostname - 域名，跟host不同的是它不带端口。</li>
+<li>port - 端口，如果没有该值会使用该协议默认端口，比如http(80)、https(443)、ftp(21)、sftp(22)。</li>
+<li>pathname - 请求路径名，它不包含search以及hash。</li>
+<li>search - 查询字符串，在URL表现为类似”?id=1”这种形式，要特别注意的是它包含问号(?)。</li>
+<li>path - 请求路径，它包含pathname以及search部份，比如”/a/b/c.php?id=1”。许多浏览器并不把URL上的hash部份带到服务器，hash部份一般用于标识本页的某个锚点，因此path这一块是会被附在请求头上送到服务器端。</li>
+<li>query - 查询参数，它与search不同之处在于它不带问号，比如”id=1&amp;name=2”。要特别注意的是，使用url.parse解析一个url的时候可以通过设置参数来决定是否对search做解析，如果将parseQueryString参数设置为true，query将会是一个对象，它用键值对的方式保存了search里包含的数据，比如{ id: 1, name: 2 }</li>
+<li>hash - 锚点，在URL处于末尾，由#号开始。在平时的网页URL中，浏览器一般不会将其发送到服务器端，它更多的是用在客户端。本意是用于做锚点，可以跳到页面某个特定位置，实际上现在更多的是用来做单页面的路由功能。举例：”#hash”。</li>
+</ul>
+<p>以下是一个完整的URL对象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> urlObject = &#123;</div><div class="line">    <span class="attr">href</span>: <span class="string">"http://user:pass@host.com:8080/p/a/t/h?query=string#hash"</span>,</div><div class="line">    <span class="attr">protocol</span>: <span class="string">"http:"</span>,</div><div class="line">    <span class="attr">slashes</span>: <span class="literal">true</span>,</div><div class="line">    <span class="attr">auth</span>: <span class="string">'user:pass'</span>,</div><div class="line">    <span class="attr">host</span>: <span class="string">'host.com:8080'</span>,</div><div class="line">    <span class="attr">port</span>: <span class="string">'8080'</span>,</div><div class="line">    <span class="attr">hostname</span>: <span class="string">'host.com'</span>,</div><div class="line">    <span class="attr">hash</span>: <span class="string">'#hash'</span>,</div><div class="line">    <span class="attr">search</span>: <span class="string">'?query=string'</span>,</div><div class="line">    <span class="attr">query</span>: &#123; <span class="attr">query</span>: <span class="string">'string'</span> &#125;, <span class="comment">// 或者 "query=string"</span></div><div class="line">    pathname: <span class="string">'/p/a/t/h'</span>,</div><div class="line">    <span class="attr">path</span>: <span class="string">'/p/a/t/h?query=string'</span>,</div><div class="line">    <span class="attr">href</span>: <span class="string">'http://user:pass@host.com:8080/p/a/t/h?query=string#hash'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="URL模块API"><a href="#URL模块API" class="headerlink" title="URL模块API"></a>URL模块API</h1><p>URL模块仅提供了3个函数，没有提供类或者其它东西：</p>
+<ul>
+<li>url.format - 将一个包含必要字段的urlObject格式化成一个合法的URL字符串。</li>
+<li>url.parse - 将一个合法的URL字符串转成urlObject，注意URL并不需要包含所有的字段，比如”./“也算是一个URL字符串。</li>
+<li>url.resolve - 拥有from以及to两个参数，自动计算出to相对于from的绝对地址。如果from参数省略，则是将to转换为绝对路径。</li>
+</ul>
+<p>这三个函数除了url.resolve都比较容易理解，至于resolve，手册给出了相应的例子，也比较形象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">url.resolve(<span class="string">'/one/two/three'</span>, <span class="string">'four'</span>)         <span class="comment">// '/one/two/four'</span></div><div class="line">url.resolve(<span class="string">'http://example.com/'</span>, <span class="string">'/one'</span>)    <span class="comment">// 'http://example.com/one'</span></div><div class="line">url.resolve(<span class="string">'http://example.com/one'</span>, <span class="string">'/two'</span>) <span class="comment">// 'http://example.com/two'</span></div></pre></td></tr></table></figure>
+<h1 id="小贴士"><a href="#小贴士" class="headerlink" title="小贴士"></a>小贴士</h1><ul>
+<li><p>弄清绝对路径的根目录在哪  </p>
+<p>在构建一个页面时为了方便可能会使用绝对路径，绝对路径是以/开头的路径，对绝对路径不大了解的前端可能会就发现直接在服务器上查看HTML文件时正常，但直接双击打开html文件则发生路径错误。这时需要认清这绝对路径的根目录到底是哪里。  </p>
+<p>假设我们的站点放在/wwwroot/mysite，访问地址是<a href="http://mysite.com，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。" target="_blank" rel="external">http://mysite.com，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。</a>  </p>
+<p>这时候访问<a href="http://mysite.com/index.html，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。" target="_blank" rel="external">http://mysite.com/index.html，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。</a>    </p>
+<p>这是因为在使用域名访问index.html时，绝对路径是指<a href="http://mysite.com/，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。" target="_blank" rel="external">http://mysite.com/，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。</a></p>
+</li>
+<li><p>查询字符串的编码  </p>
+<p>请求一个URL时许多人弄不清哪里需要编码哪里不需要编码，甚至还重复编码，这里特地做一下说明。另外，服务器端接收到你的值是不需要解码的，因为服务器本身就会帮你解码了。</p>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 在发起请求的时候，queryString每个字段以及它的值都应该被编码，比如"/file?键1=值1&amp;键2=值2"应该这么写（也可以使用encodeURI，但url不能带search和hash部份）：  </span></div><div class="line"><span class="keyword">var</span> url = <span class="string">"/file?"</span> + <span class="built_in">encodeURIComponent</span>(<span class="string">"键1"</span>) + <span class="string">"="</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"值1"</span>) + <span class="string">"&amp;"</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"键2"</span>) + <span class="string">"="</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"值2"</span>);</div><div class="line"><span class="comment">// 当然，如果你确认你的key和value都不会有非ASCII字符以及需要转义的字符，你也可以不编码（如果不知道是否需要编码，一定要编码，有利无害）。另外，如果值是一个url,该url也需要做编码：  </span></div><div class="line"><span class="comment">// value本身是一个url，请对它的key和value编码。由于key的值是"key"，我确认它绝对不需要编码（因为encodeURIComponent("key")值同样是key），所以我就省掉了。</span></div><div class="line"><span class="keyword">var</span> value = <span class="string">"http://www.site.com/?key="</span> + <span class="built_in">encodeURIComponent</span>(<span class="string">"这是中文值"</span>);</div><div class="line"><span class="comment">// url的值为value的值，value的值也需要编码。</span></div><div class="line"><span class="keyword">var</span> url = <span class="string">"http://mysite.com/?url="</span> + <span class="built_in">encodeURIComponent</span>(value);</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Node.js学习笔记" scheme="https://bennyzheng.github.io/categories/Node-js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
+    
+      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
+    
+      <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
     
   </entry>
   
