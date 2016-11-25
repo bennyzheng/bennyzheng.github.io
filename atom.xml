@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://bennyzheng.github.io/"/>
-  <updated>2016-11-24T14:18:01.000Z</updated>
+  <updated>2016-11-25T18:33:32.000Z</updated>
   <id>https://bennyzheng.github.io/</id>
   
   <author>
@@ -16,11 +16,109 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>浏览器事件循环以及多线程</title>
+    <link href="https://bennyzheng.github.io/archivers/2016/11/event-loop-and-multi-thread/"/>
+    <id>https://bennyzheng.github.io/archivers/2016/11/event-loop-and-multi-thread/</id>
+    <published>2016-11-25T18:33:32.000Z</published>
+    <updated>2016-11-25T18:33:32.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Javascript在浏览器中一直都是以单线程的方式运行，这意味着它同一时间只能干一件事，前端们不用担心你在读完一个变量的时候该变量马上被另一个线程修改而导致后续计算变得不准确，也不用担心对一个DOM节点做修改操作的时候突然它被删除。支持多线程的语言都有一个东西叫线程锁，但是Javascript作为操作HTML页面的脚本语言它应该足够简单，所以单线程是最合适的，但同样有方法实现多线程以提高系统资源利用率。<br><a id="more"></a></p>
+<h1 id="事件循环"><a href="#事件循环" class="headerlink" title="事件循环"></a>事件循环</h1><p>首先了解一下什么叫进程。进程就是一个应用程序在内存中的实例，一个CPU核心只能在同一时间处理一个进程的工作，操作系统同时在跑的应用程序当然不可能只有一个，所以操作系统就不停地把CPU资源交给其中一个进程，而其它没排到队的进程则进入沉睡状态。许多时候为了更好的利用起多核CPU的优势，一个进程往往会把自己fork成多个进程，让应用程序的工作能够同时在多个CPU上跑起来以达到利用更多CPU资源提高性能的目的，比如Node.js就是这么干的。</p>
+<p>线程是轻量版的进程，一个进程可以拥有多个线程，线程也是CPU资源调度的最小单位，但线程与线程可以共享进程的公用资源。在超线程技术发明之后，多核多线程CPU再配上相应的操作系统、软件可以实现多个线程利用多个CPU核心的资源。</p>
+<p>上边仅是简单地讲一下进程和线程，我对这方面并不擅长，或许有什么理解上的错误，但是GUI界面的应用程序一般都是对UI的交互交给一个线程处理，其它线程用于做计算。这样，其它线程在计算的同时不会阻塞了UI线程的运行，界面也就不会卡顿。</p>
+<p>可能有人会提起setTimeout，说当我设置两个定时器，都是在1秒后执行，那么它们不就同时执行了吗？看起来像是多线程了，事实上二者不可能同时执行。使用setTimeout注册过的函数并不保证非常准时地执行，可能会延后一点时间执行，两个注册在定时器里的函数也是先后执行的，只有一个执行完了才会执行另一个。</p>
+<p>这个先后关系是通过一个叫事件循环的东西来做调度的，页面上所有任务都会被放到一个先进先出的队列中进行排队，事件循环机制会从队列头取出一个任务执行，该任务完成后再取下一个任务执行。如果一个任务有大量的运算或费时的同步操作（比如同步ajax）将会导致下一个任务一直处于等待状态。</p>
+<p>我们可以做一个实验：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!DOCTYPE html &gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"Content-Type"</span> <span class="attr">content</span>=<span class="string">"text/html; charset=utf-8"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"X-UA-Compatible"</span> <span class="attr">content</span>=<span class="string">"IE=edge,chrome=1"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"renderer"</span> <span class="attr">content</span>=<span class="string">"webkit"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>测试<span class="tag">&lt;/<span class="name">title</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"http://lib.sinaapp.com/js/jquery/1.7.2/jquery.min.js"</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">        <span class="built_in">console</span>.time(<span class="string">"begin"</span>);</div><div class="line"></div><div class="line">        setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="built_in">console</span>.timeEnd(<span class="string">"begin"</span>);</div><div class="line">        &#125;, <span class="number">1000</span>);</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</div><div class="line">            $.ajax(&#123;</div><div class="line">                <span class="attr">url</span>: <span class="string">"./test.html"</span>,</div><div class="line">                <span class="attr">async</span>: <span class="literal">false</span>,</div><div class="line">                <span class="attr">method</span>: <span class="string">"get"</span></div><div class="line">            &#125;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>在这个示例中，一开始就注册了个函数在一秒后输出从开始注册到开始执行的时间差，随后再调用ajax同步请求当前页面（./text.html）一千次，在我的机子上输出了”begin: 1.74e+03ms”，也就是事实上1740ms后才执行了setTimeout的回调函数。这是因为同步操作导致事件循环长时间耗在请求代码的任务上而没有开始下一个注册的任务。</p>
+<p>有一个非常有用的技巧，如果有一个不重要也不影响当前流程走向的任务，可以使用setTimeout(fn, 0)来执行。虽然0表示马上执行，但事实上事件循环并不会马上执行它，而是会将它插入任务队列，这样子更重要的任务就会被先执行了，比如界面的渲染。</p>
+<h1 id="初识Worker"><a href="#初识Worker" class="headerlink" title="初识Worker"></a>初识Worker</h1><p>尽管在浏览器中脚本确实是以单线程的方式运行的，但考虑到可能会有大量数据计算之类的耗时操作，IE10以上版本以及其它标准浏览器都已经支持了Web Worker，它实现了Javascript在浏览器中多线程的需求，在一个Worker中不管做什么同步操作都不会影响到页面的操作，也不会导致页面卡顿（当然，你的硬件很差这个就回天无力了，毕竟系统资源就那么多）。</p>
+<p>先来看一个简单的例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.time(<span class="string">"timeout"</span>);</div><div class="line"></div><div class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"timeout"</span>);</div><div class="line">&#125;, <span class="number">100</span>);</div><div class="line"></div><div class="line"><span class="built_in">console</span>.time(<span class="string">"concat"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> str = <span class="string">""</span>;</div><div class="line"></div><div class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++) &#123;</div><div class="line">    str = str + <span class="string">"abc"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="built_in">console</span>.timeEnd(<span class="string">"concat"</span>);</div></pre></td></tr></table></figure>
+<p>在我机子上执行结果是：</p>
+<p>concat: 609ms<br>timeout: 674ms</p>
+<p>由于现在我们将字符拼接的代码放入Worker中执行：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">console</span>.time(<span class="string">"worker"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> str = <span class="string">""</span>;</div><div class="line"></div><div class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++) &#123;</div><div class="line">    str = str + <span class="string">"abc"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="built_in">console</span>.timeEnd(<span class="string">"worker"</span>);</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> worker = <span class="keyword">new</span> Worker(<span class="string">"./worker.js"</span>);</div><div class="line"><span class="built_in">console</span>.time(<span class="string">"timeout"</span>);</div><div class="line"></div><div class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"timeout"</span>);</div><div class="line">&#125;, <span class="number">100</span>);</div><div class="line"></div><div class="line"><span class="built_in">console</span>.time(<span class="string">"worker"</span>);</div></pre></td></tr></table></figure>
+<p>很惊人地结果：</p>
+<p>timeout: 100ms<br>worker: 109ms</p>
+<p>虽然并不是每次都一样，但基本上timeout都是100ms，而worker都是100ms出头，也就是说从性能上看提高幅度非常大。为什么同样的代码在页面上执行需要609ms，而在worker中却只需要109ms？按我的理解是浏览器主页面线程的脚本是跟整个页面的各种任务在抢资源，而worker则是另起一线程独占了一份独立的CPU资源，自然运行速度就快很多了。</p>
+<p>在MDN上关于Worker的介绍有一段文字很自信地拍着胸口向使用者们保证Worker的线程安全问题：</p>
+<blockquote><p>Worker 接口会生成真正的操作系统级别的线程，如果你不太小心，那么并发(concurrency)会对你的代码产生有趣的影响。然而，对于 web worker 来说，与其他线程的通信点会被很小心的控制，这意味着你很难引起并发问题。你没有办法去访问非线程安全的组件或者是 DOM，此外你还需要通过序列化对象来与线程交互特定的数据。所以你要是不费点劲儿，还真搞不出错误来。</p>
+<footer><strong>MDN</strong><cite><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Using_web_workers" target="_blank" rel="external">使用 Web Workers</a></cite></footer></blockquote>
+<p>Worker在运行期间与主线程几乎是完全分开的，二者无法直接共享数据，Worker也不能直接操作页面的DOM节点，简单来说不能把它当面浏览器中的普通脚本，它的环境更加纯净。</p>
+<p>Worker可以做以下几件事：</p>
+<ul>
+<li>与主线程互相通讯</li>
+<li>使用XMLHttpRequest发起请求</li>
+<li>使用定时器</li>
+</ul>
+<p>除此之外，Worker同时能够使用许多函数以及小量的限制版对象，比如location以及navigator。这方面的信息可以查阅《<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Functions_and_classes_available_to_workers 来自MDN" target="_blank" rel="external">Worker支持的函数</a>》。</p>
+<h1 id="使用Worker"><a href="#使用Worker" class="headerlink" title="使用Worker"></a>使用Worker</h1><h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>Worker初始化非常简单，直接使用new关键词新建一个实例，传入新线程代码所在的脚本文件路径(注意：<strong>必须遵守同源策略，但Worker内部使用importScripts函数加载的代码则不需要遵守，你可以加载CDN上的jquery库</strong>)，比如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> worker = <span class="keyword">new</span> Worker(<span class="string">"./test.js"</span>);</div></pre></td></tr></table></figure>
+<p>事实上为了减少http请求，除了IE之外的浏览器还支持用URL对象当参数：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/code"</span> <span class="attr">id</span>=<span class="string">"worker-code"</span>&gt;</span><span class="javascript"></span></div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"inline worker"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">var</span> str = <span class="string">""</span>;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) &#123;</div><div class="line">        str = str + <span class="string">"abc"</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"inline worker"</span>);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">    <span class="keyword">var</span> code = <span class="built_in">document</span>.getElementById(<span class="string">"worker-code"</span>).innerHTML;</div><div class="line">    <span class="keyword">var</span> blob = <span class="keyword">new</span> Blob(<span class="built_in">Array</span>.from(code), &#123; <span class="attr">type</span>: <span class="string">"text/javascript"</span> &#125;);</div><div class="line">    <span class="keyword">var</span> url = URL.createObjectURL(blob);</div><div class="line"></div><div class="line">    <span class="keyword">var</span> worker = <span class="keyword">new</span> Worker(url);</div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"timeout"</span>);</div><div class="line"></div><div class="line">    setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.timeEnd(<span class="string">"timeout"</span>);</div><div class="line">    &#125;, <span class="number">100</span>);</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"worker"</span>);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>在我的机子上，运行结果是：</p>
+<p>timeout: 101ms<br>inline worker: 108ms</p>
+<p>其实跟前边的运行结果没什么区别，本来timeout就有可能延时执行。我个人是比较推荐内嵌worker代码在页面或者放入javascript代码内执行（很简单啊，写个函数然后toString一下就得到它的代码了…），这样可以节省http请求，加载Worker的脚本文件也是要花时间的，尽管浏览器很聪明地帮我们隐藏了一切，你可以把它当成瞬间就加载完一般使用，这个后边会讲。</p>
+<h2 id="线程通讯"><a href="#线程通讯" class="headerlink" title="线程通讯"></a>线程通讯</h2><p>Worker线程可以与主线程通讯，这主要是通过postMessage以及message事件来实现，并且可以传递序列化后的数据给对方：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/code"</span> <span class="attr">id</span>=<span class="string">"worker-code"</span>&gt;</span><span class="javascript"></span></div><div class="line">    addEventListener(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</div><div class="line">        <span class="comment">// ev是一个message对象，可以用这种方法看它的结构</span></div><div class="line">        <span class="comment">// console.dir(ev);</span></div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"worker accept: %s"</span>, ev.data);</div><div class="line">        postMessage(<span class="string">"hello master"</span>);</div><div class="line">    &#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">    <span class="keyword">var</span> code = <span class="built_in">document</span>.getElementById(<span class="string">"worker-code"</span>).innerHTML;</div><div class="line">    <span class="keyword">var</span> blob = <span class="keyword">new</span> Blob(<span class="built_in">Array</span>.from(code), &#123; <span class="attr">type</span>: <span class="string">"text/javascript"</span> &#125;);</div><div class="line">    <span class="keyword">var</span> url = URL.createObjectURL(blob);</div><div class="line"></div><div class="line">    <span class="keyword">var</span> worker = <span class="keyword">new</span> Worker(url);</div><div class="line"></div><div class="line">    worker.addEventListener(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"master accept: %s"</span>, ev.data);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    worker.postMessage(<span class="string">"hello worker"</span>);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>在主线程中首先创建了一个Worker，并为该Worker绑定了message事件用于响应来自Worker post过来的消息。Worker同样使用绑定了message事件，用于接收来自主线程的消息并随后向主线程发送消息，这就是最简单的通讯方式。这段代码在我的机子上运行结果如下：</p>
+<p>worker accept: hello worker<br>master accept: hello master</p>
+<p>一般来说线程之间无法互相post对象，只能post可序列化的数据，比如将示例中的代码稍改一下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/code"</span> <span class="attr">id</span>=<span class="string">"worker-code"</span>&gt;</span><span class="javascript"></span></div><div class="line">    addEventListener(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</div><div class="line">        <span class="comment">// ev是一个message对象，可以用这种方法看它的结构</span></div><div class="line">        <span class="comment">// console.dir(ev);</span></div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"worker accept: %s, type: %s"</span>);</div><div class="line">        postMessage(<span class="string">"hello master"</span>);</div><div class="line">    &#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">    <span class="keyword">var</span> code = <span class="built_in">document</span>.getElementById(<span class="string">"worker-code"</span>).innerHTML;</div><div class="line">    <span class="keyword">var</span> blob = <span class="keyword">new</span> Blob(<span class="built_in">Array</span>.from(code), &#123; <span class="attr">type</span>: <span class="string">"text/javascript"</span> &#125;);</div><div class="line">    <span class="keyword">var</span> url = URL.createObjectURL(blob);</div><div class="line"></div><div class="line">    <span class="keyword">var</span> worker = <span class="keyword">new</span> Worker(url);</div><div class="line"></div><div class="line">    worker.addEventListener(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"master accept: %s"</span>, ev.data);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    worker.postMessage(<span class="built_in">document</span>);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>该示例将document对象post过去，然后报了这样的异常：Uncaught DOMException: Failed to execute ‘postMessage’ on ‘Worker’: An object could not be cloned.意思是说document无法被复制一个副本用于post。</p>
+<p>没错，postMessage方法在传递数据的时候是复制一个副本而不是直接将内容本身送过去，类似于函数传递参数，函数的参数就相当于函数的局部变量，它是外部传递进来的值的一个副本，二者毫无关系互不影响。而document对象却无法复制（只要是DOM对象皆如此），无法传递对象的引用。</p>
+<p>或许现在你会马上尝试传递一个普通的Javascript对象过去，可以的，一点问题都没有！因为普通的对象依然是可以通过JSON.stringify(obj)的方式转换成json字符串。我尝试过，确实非常方便，在Worker内部接收到的自动帮我们反序列化成一个跟原来一模一样的对象。要注意的是：<strong>该对象依然是原来对象的一个副本，在Worker中进行修改并不会导致主线程的对象发生改变！</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/code"</span> <span class="attr">id</span>=<span class="string">"worker-code"</span>&gt;</span><span class="javascript"></span></div><div class="line">    addEventListener(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> obj = ev.data;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"worker: %s"</span>, <span class="built_in">JSON</span>.stringify(obj));</div><div class="line">        ev.data.value = <span class="string">"world"</span>;</div><div class="line">        <span class="comment">// &#123; "value": "world" &#125; 值已经改变</span></div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"worker: %s"</span>, <span class="built_in">JSON</span>.stringify(obj));</div><div class="line">        postMessage(<span class="string">"ok!"</span>)</div><div class="line">    &#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">    <span class="keyword">var</span> code = <span class="built_in">document</span>.getElementById(<span class="string">"worker-code"</span>).innerHTML;</div><div class="line">    <span class="keyword">var</span> blob = <span class="keyword">new</span> Blob(<span class="built_in">Array</span>.from(code), &#123; <span class="attr">type</span>: <span class="string">"text/javascript"</span> &#125;);</div><div class="line">    <span class="keyword">var</span> url = URL.createObjectURL(blob);</div><div class="line"></div><div class="line">    <span class="keyword">var</span> worker = <span class="keyword">new</span> Worker(url);</div><div class="line">    <span class="keyword">var</span> obj = &#123; <span class="attr">value</span>: <span class="string">"hello"</span> &#125;;</div><div class="line"></div><div class="line">    worker.addEventListener(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</div><div class="line">        <span class="comment">// 检查一下外部的obj</span></div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"master: %s"</span>, <span class="built_in">JSON</span>.stringify(obj));</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    worker.postMessage(obj);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>这就是输出结果，符合我上边的说法：</p>
+<p>worker: {“value”:”hello”}<br>worker: {“value”:”world”}<br>master: {“value”:”hello”}</p>
+<p>但这种做法并不能让我们比较满意，如果需要传输一段文件内容，那么这个序列化、复制、反序列化的过程将会比较耗时。还好，Worker提供了一种方式可以让我们某些类型的对象直接传递引用过去，但出于线程安全考虑，该对象在原来的上下文中会消失！也就是如果主线程将对象转让给Worker之后，主线程就访问不到该对象了。根据文档中描述，现阶段仅有MessagePort以及ArrayBuffer两种对象可以用于转让。</p>
+<p>postMessage方法其实拥有两个参数，第二个参数是一个可选的数组，用于放置转让对象列表：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/code"</span> <span class="attr">id</span>=<span class="string">"worker-code"</span>&gt;</span><span class="javascript"></span></div><div class="line">    addEventListener(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> typeArray = ev.data;</div><div class="line">        <span class="comment">// 1, 2, 3</span></div><div class="line">        <span class="built_in">console</span>.log(typeArray.toString());</div><div class="line">        postMessage(<span class="string">"ok"</span>);</div><div class="line">    &#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">    <span class="keyword">var</span> code = <span class="built_in">document</span>.getElementById(<span class="string">"worker-code"</span>).innerHTML;</div><div class="line">    <span class="keyword">var</span> blob = <span class="keyword">new</span> Blob(<span class="built_in">Array</span>.from(code), &#123; <span class="attr">type</span>: <span class="string">"text/javascript"</span> &#125;);</div><div class="line">    <span class="keyword">var</span> url = URL.createObjectURL(blob);</div><div class="line"></div><div class="line">    <span class="keyword">var</span> worker = <span class="keyword">new</span> Worker(url);</div><div class="line">    <span class="keyword">var</span> typeArray = <span class="keyword">new</span> <span class="built_in">Int8Array</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</div><div class="line"></div><div class="line">    worker.addEventListener(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</div><div class="line">        <span class="comment">// Int8Array[0]</span></div><div class="line">        <span class="built_in">console</span>.dir(typeArray);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    worker.postMessage(typeArray, [typeArray.buffer]);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>示例将typeArray传递给Worker，它将被序列化。但在postMessage时却将typeArray的buffer列在转让列表中，要求该对象直接进行转让，也就是说在Worker中复制的typeArray使用的ArrayBuffer对象其实就是主线程中的typeArray使用的ArrayBuffer，它并没有经过复制。在Worker得到typeArray之后，重新发了个消息通知主线程，这时候主线程再来做检查，外部的typeArray还在（因为仅是复制了一份），但它的buffer却不见了，缓冲区变成0字节。</p>
+<p>这里必须强调一点，转让列表中的对象必须是postMessage第一个参数的本身或者一部份，如果与它毫无关联那么在Worker内部无法得到它。</p>
+<h2 id="停止Worker"><a href="#停止Worker" class="headerlink" title="停止Worker"></a>停止Worker</h2><p>想要将一个Worker停止非常简单，worker对象提供了terminate方法，而Worker内部则可以调用close方法关闭本线程。</p>
+<h1 id="执行顺序"><a href="#执行顺序" class="headerlink" title="执行顺序"></a>执行顺序</h1><p>Worker允许加载一个同源的js文件作为它的执行代码，同时在Worker内部可以使用importScripts函数无限制地跨域加载js文件。由于加载js文件是需要时间的，在执行过程中它们是同步的还是异步的还需要进行实验：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">sleep(<span class="number">1</span>);</div><div class="line">header(<span class="string">'Content-Type: application/javascript'</span>);</div><div class="line"><span class="meta">?&gt;</span></div><div class="line">console.log(<span class="string">"worker load: %d"</span>, <span class="keyword">new</span> Date().getTime());</div><div class="line"></div><div class="line">addEventListener(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span><span class="params">(ev)</span> </span>&#123;</div><div class="line">    console.log(<span class="string">"worker accept: %s, time is %d"</span>, ev.data, <span class="keyword">new</span> Date().getTime());</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"worker create: %d"</span>, <span class="keyword">new</span> <span class="built_in">Date</span>().getTime());</div><div class="line">    <span class="keyword">var</span> worker = <span class="keyword">new</span> Worker(<span class="string">"./worker.php?t="</span> + <span class="keyword">new</span> <span class="built_in">Date</span>().getTime());</div><div class="line">    worker.postMessage(<span class="string">"here?"</span>)</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"master send: %d"</span>, <span class="keyword">new</span> <span class="built_in">Date</span>().getTime());</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>worker.php文件先来了个sleep(1)睡眠了1秒才开始返回数据，也就是说Worker是至少1秒后才开始工作。而主线程在建立Worker之后马上发送一句”here?”并输出时间，现在看一下运行结果，令人惊讶：</p>
+<p>worker create: 1480097663629<br>master send: 1480097663631<br>worker load: 1480097664656<br>worker accept: here?, time is 1480097664660</p>
+<p>“worker create”与”master send”之间的时间间隔是2ms，也就是说几乎同时执行，证明建立一个Worker并不是同步操作。在1000ms后控制台出现”worker load”，证明Worker真的是1秒后才开始工作，但后边的”worker accept”却表示它接收到了”here?”。按常理来说消息是在Worker运行前一秒发的，当Worker开始运行时消息早已经丢失，因为在发送时没人接收，但事实上并非如此。</p>
+<p>现在再将php代码稍改改看看运行结果：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">sleep(<span class="number">1</span>);</div><div class="line">header(<span class="string">'Content-Type: application/javascript'</span>);</div><div class="line"><span class="meta">?&gt;</span></div><div class="line">console.log(<span class="string">"worker load: %d"</span>, <span class="keyword">new</span> Date().getTime());</div><div class="line"></div><div class="line">setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</div><div class="line">    addEventListener(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span><span class="params">(ev)</span> </span>&#123;</div><div class="line">        console.log(<span class="string">"worker accept: %s, time is %d"</span>, ev.data, <span class="keyword">new</span> Date().getTime());</div><div class="line">    &#125;);</div><div class="line">&#125;, <span class="number">100</span>);</div></pre></td></tr></table></figure>
+<p>我将message事件的绑定放到setTimeout之中，也就是0.1秒后才绑事件，运行结果如下：</p>
+<p>worker create: 1480098216641<br>master send: 1480098216643<br>worker load: 1480098217667</p>
+<p>这次Worker真的接收不到未执行前发送的消息了。由此可见Worker的执行代码加载确实是异步的，在Worker加载期间主线程发送的消息都会被暂存起来，直到Worker开始执行并且绑定了message事件，浏览器才会将保存起来的消息真的发送过去，但是在Worker脚本执行完之后还没碰上事件绑定，消息就真的被抛弃了，哪怕你在某个时刻终于想起要绑定message事件都无法收到消息。浏览器在这方面封装得非常棒，至少我们不需要确保Worker绑定事件后才开始发送消息，唯一需要注意的是必须在Worker的全局作用域下直接绑个message事件而不能在某个异步操作之后再绑。</p>
+<p>需要考虑执行顺序的还有Worker内部的importScripts数，它能够加载一个js文件在当前作用域下执行，但这个我们无需试验，因为MDN上说得非常清楚：</p>
+<blockquote><p>注意： 脚本的下载顺序不固定，但执行时会按照你将文件名传入到 importScripts() 中的顺序。这是同步完成的；直到所有脚本都下载并运行完毕， importScripts() 才会返回。</p>
+<footer><strong>MDN</strong><cite><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Using_web_workers" target="_blank" rel="external">使用 Web Workers</a></cite></footer></blockquote>
+<p>也就是说importScripts是一个同步操作，它允许你一次传入多个文件路径导入并执行，虽然这些文件由于网络原因加载完成的时间不一样，但Worker会保证它们在全部加载完之后再执行，而且执行顺序跟参数的顺序一致。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">importScripts(<span class="string">"a.js"</span>, <span class="string">"b.js"</span>, <span class="string">"c.js"</span>);</div><div class="line"><span class="comment">// other code</span></div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Javascript在浏览器中一直都是以单线程的方式运行，这意味着它同一时间只能干一件事，前端们不用担心你在读完一个变量的时候该变量马上被另一个线程修改而导致后续计算变得不准确，也不用担心对一个DOM节点做修改操作的时候突然它被删除。支持多线程的语言都有一个东西叫线程锁，但是Javascript作为操作HTML页面的脚本语言它应该足够简单，所以单线程是最合适的，但同样有方法实现多线程以提高系统资源利用率。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Javascript" scheme="https://bennyzheng.github.io/categories/Javascript/"/>
+    
+    
+      <category term="event-loop" scheme="https://bennyzheng.github.io/tags/event-loop/"/>
+    
+      <category term="multi-thread" scheme="https://bennyzheng.github.io/tags/multi-thread/"/>
+    
+      <category term="web-worker" scheme="https://bennyzheng.github.io/tags/web-worker/"/>
+    
+  </entry>
+  
+  <entry>
     <title>数据存储方式 - endian</title>
     <link href="https://bennyzheng.github.io/archivers/2016/11/endian/"/>
     <id>https://bennyzheng.github.io/archivers/2016/11/endian/</id>
     <published>2016-11-22T16:00:00.000Z</published>
-    <updated>2016-11-24T14:18:01.000Z</updated>
+    <updated>2016-11-25T07:18:07.000Z</updated>
     
     <content type="html"><![CDATA[<p>现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。<br><a id="more"></a><br>数据在内存中是以二进制方式存储的，一个字节可以存储一个8位的整型，有符号整型可以存储-128至127，而无符号整型可以存储0-255。无符号整型255写成二进制以及十六进制形式是：</p>
 <p>1111 1111<br>F    F</p>
@@ -54,6 +152,8 @@
       &lt;p&gt;现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。&lt;br&gt;
     
     </summary>
+    
+      <category term="其它技术话题" scheme="https://bennyzheng.github.io/categories/%E5%85%B6%E5%AE%83%E6%8A%80%E6%9C%AF%E8%AF%9D%E9%A2%98/"/>
     
     
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
@@ -245,13 +345,79 @@
       <category term="Javascript" scheme="https://bennyzheng.github.io/categories/Javascript/"/>
     
     
-      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
-    
       <category term="TypeArray" scheme="https://bennyzheng.github.io/tags/TypeArray/"/>
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
       <category term="ArrayBuffer" scheme="https://bennyzheng.github.io/tags/ArrayBuffer/"/>
+    
+      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Node.js - url模块</title>
+    <link href="https://bennyzheng.github.io/archivers/2016/11/node-url/"/>
+    <id>https://bennyzheng.github.io/archivers/2016/11/node-url/</id>
+    <published>2016-11-19T16:00:00.000Z</published>
+    <updated>2016-11-24T14:18:50.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。<br><a id="more"></a></p>
+<h1 id="URL的结构"><a href="#URL的结构" class="headerlink" title="URL的结构"></a>URL的结构</h1><p>Node.js手册非常形象的使用了下方这张图片作为解读URL结构的示例，图中很清楚地为我们构造出一个完整的URL应该是长什么样的。</p>
+<p><img src="/images/2016/11/url.png" alt="Node.js的URL结构图"></p>
+<p>Node.js的url模块能够让工程师将一个URL字符串解析成一个对象，它拥有以下属性：</p>
+<ul>
+<li>href - 保存了完整的url地址。要特别注意的是它会将协议以及域名中的大写字母转成小写字母，至于其它位置的字符则会保持原样。这是因为协议以及域名是大小写不分的，为了方便直接全部都转成小写。</li>
+<li>protocol - 小写字母组成的协议类型，比如http:。要特别注意:也是协议的一部份（一直觉得很囧）。</li>
+<li>slashes - 一个布尔值，一般是true，它注明url的协议后边是否拥有两个/字符，有些奇葩URL是不带//的。</li>
+<li>host - 小写字母组成的域名+端口，二者之间有个冒号隔开。如果直接使用IP访问，那么host值就是IP地址，否则就是域名。另外，如果URL上没有写端口那么这里的值跟hostname一致。举个例子：www.host.com:8080。</li>
+<li>auth - URL中附带的认证信息，这个很少使用，毕竟不是很安全。当我们访问一个要求认证的网页时，服务器将会返回http状态码401要求浏览器提供用户认证信息，输入用户名和密码之后它将会在Http请求报文头中以Base64的方式写在Authorization字段中。你也可以使用类似”<a href="http://user:pass/host.com/a.php&quot;的方式直接将用户名和密码（密码可省略，照样弹出窗口让你输入）写在URL中。" target="_blank" rel="external">http://user:pass/host.com/a.php&quot;的方式直接将用户名和密码（密码可省略，照样弹出窗口让你输入）写在URL中。</a></li>
+<li>hostname - 域名，跟host不同的是它不带端口。</li>
+<li>port - 端口，如果没有该值会使用该协议默认端口，比如http(80)、https(443)、ftp(21)、sftp(22)。</li>
+<li>pathname - 请求路径名，它不包含search以及hash。</li>
+<li>search - 查询字符串，在URL表现为类似”?id=1”这种形式，要特别注意的是它包含问号(?)。</li>
+<li>path - 请求路径，它包含pathname以及search部份，比如”/a/b/c.php?id=1”。许多浏览器并不把URL上的hash部份带到服务器，hash部份一般用于标识本页的某个锚点，因此path这一块是会被附在请求头上送到服务器端。</li>
+<li>query - 查询参数，它与search不同之处在于它不带问号，比如”id=1&amp;name=2”。要特别注意的是，使用url.parse解析一个url的时候可以通过设置参数来决定是否对search做解析，如果将parseQueryString参数设置为true，query将会是一个对象，它用键值对的方式保存了search里包含的数据，比如{ id: 1, name: 2 }</li>
+<li>hash - 锚点，在URL处于末尾，由#号开始。在平时的网页URL中，浏览器一般不会将其发送到服务器端，它更多的是用在客户端。本意是用于做锚点，可以跳到页面某个特定位置，实际上现在更多的是用来做单页面的路由功能。举例：”#hash”。</li>
+</ul>
+<p>以下是一个完整的URL对象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> urlObject = &#123;</div><div class="line">    <span class="attr">href</span>: <span class="string">"http://user:pass@host.com:8080/p/a/t/h?query=string#hash"</span>,</div><div class="line">    <span class="attr">protocol</span>: <span class="string">"http:"</span>,</div><div class="line">    <span class="attr">slashes</span>: <span class="literal">true</span>,</div><div class="line">    <span class="attr">auth</span>: <span class="string">'user:pass'</span>,</div><div class="line">    <span class="attr">host</span>: <span class="string">'host.com:8080'</span>,</div><div class="line">    <span class="attr">port</span>: <span class="string">'8080'</span>,</div><div class="line">    <span class="attr">hostname</span>: <span class="string">'host.com'</span>,</div><div class="line">    <span class="attr">hash</span>: <span class="string">'#hash'</span>,</div><div class="line">    <span class="attr">search</span>: <span class="string">'?query=string'</span>,</div><div class="line">    <span class="attr">query</span>: &#123; <span class="attr">query</span>: <span class="string">'string'</span> &#125;, <span class="comment">// 或者 "query=string"</span></div><div class="line">    pathname: <span class="string">'/p/a/t/h'</span>,</div><div class="line">    <span class="attr">path</span>: <span class="string">'/p/a/t/h?query=string'</span>,</div><div class="line">    <span class="attr">href</span>: <span class="string">'http://user:pass@host.com:8080/p/a/t/h?query=string#hash'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="URL模块API"><a href="#URL模块API" class="headerlink" title="URL模块API"></a>URL模块API</h1><p>URL模块仅提供了3个函数，没有提供类或者其它东西：</p>
+<ul>
+<li>url.format - 将一个包含必要字段的urlObject格式化成一个合法的URL字符串。</li>
+<li>url.parse - 将一个合法的URL字符串转成urlObject，注意URL并不需要包含所有的字段，比如”./“也算是一个URL字符串。</li>
+<li>url.resolve - 拥有from以及to两个参数，自动计算出to相对于from的绝对地址。如果from参数省略，则是将to转换为绝对路径。</li>
+</ul>
+<p>这三个函数除了url.resolve都比较容易理解，至于resolve，手册给出了相应的例子，也比较形象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">url.resolve(<span class="string">'/one/two/three'</span>, <span class="string">'four'</span>)         <span class="comment">// '/one/two/four'</span></div><div class="line">url.resolve(<span class="string">'http://example.com/'</span>, <span class="string">'/one'</span>)    <span class="comment">// 'http://example.com/one'</span></div><div class="line">url.resolve(<span class="string">'http://example.com/one'</span>, <span class="string">'/two'</span>) <span class="comment">// 'http://example.com/two'</span></div></pre></td></tr></table></figure>
+<h1 id="小贴士"><a href="#小贴士" class="headerlink" title="小贴士"></a>小贴士</h1><ul>
+<li><p>弄清绝对路径的根目录在哪  </p>
+<p>在构建一个页面时为了方便可能会使用绝对路径，绝对路径是以/开头的路径，对绝对路径不大了解的前端可能会就发现直接在服务器上查看HTML文件时正常，但直接双击打开html文件则发生路径错误。这时需要认清这绝对路径的根目录到底是哪里。  </p>
+<p>假设我们的站点放在/wwwroot/mysite，访问地址是<a href="http://mysite.com，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。" target="_blank" rel="external">http://mysite.com，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。</a>  </p>
+<p>这时候访问<a href="http://mysite.com/index.html，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。" target="_blank" rel="external">http://mysite.com/index.html，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。</a>    </p>
+<p>这是因为在使用域名访问index.html时，绝对路径是指<a href="http://mysite.com/，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。" target="_blank" rel="external">http://mysite.com/，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。</a></p>
+</li>
+<li><p>查询字符串的编码  </p>
+<p>请求一个URL时许多人弄不清哪里需要编码哪里不需要编码，甚至还重复编码，这里特地做一下说明。另外，服务器端接收到你的值是不需要解码的，因为服务器本身就会帮你解码了。</p>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 在发起请求的时候，queryString每个字段以及它的值都应该被编码，比如"/file?键1=值1&amp;键2=值2"应该这么写（也可以使用encodeURI，但url不能带search和hash部份）：  </span></div><div class="line"><span class="keyword">var</span> url = <span class="string">"/file?"</span> + <span class="built_in">encodeURIComponent</span>(<span class="string">"键1"</span>) + <span class="string">"="</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"值1"</span>) + <span class="string">"&amp;"</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"键2"</span>) + <span class="string">"="</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"值2"</span>);</div><div class="line"><span class="comment">// 当然，如果你确认你的key和value都不会有非ASCII字符以及需要转义的字符，你也可以不编码（如果不知道是否需要编码，一定要编码，有利无害）。另外，如果值是一个url,该url也需要做编码：  </span></div><div class="line"><span class="comment">// value本身是一个url，请对它的key和value编码。由于key的值是"key"，我确认它绝对不需要编码（因为encodeURIComponent("key")值同样是key），所以我就省掉了。</span></div><div class="line"><span class="keyword">var</span> value = <span class="string">"http://www.site.com/?key="</span> + <span class="built_in">encodeURIComponent</span>(<span class="string">"这是中文值"</span>);</div><div class="line"><span class="comment">// url的值为value的值，value的值也需要编码。</span></div><div class="line"><span class="keyword">var</span> url = <span class="string">"http://mysite.com/?url="</span> + <span class="built_in">encodeURIComponent</span>(value);</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Node.js学习笔记" scheme="https://bennyzheng.github.io/categories/Node-js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
+    
+      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
+    
+      <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
     
   </entry>
   
@@ -361,77 +527,11 @@
       <category term="Javascript" scheme="https://bennyzheng.github.io/categories/Javascript/"/>
     
     
+      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
+    
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
-      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
-    
       <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Node.js - url模块</title>
-    <link href="https://bennyzheng.github.io/archivers/2016/11/node-url/"/>
-    <id>https://bennyzheng.github.io/archivers/2016/11/node-url/</id>
-    <published>2016-11-19T16:00:00.000Z</published>
-    <updated>2016-11-24T14:18:50.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。<br><a id="more"></a></p>
-<h1 id="URL的结构"><a href="#URL的结构" class="headerlink" title="URL的结构"></a>URL的结构</h1><p>Node.js手册非常形象的使用了下方这张图片作为解读URL结构的示例，图中很清楚地为我们构造出一个完整的URL应该是长什么样的。</p>
-<p><img src="/images/2016/11/url.png" alt="Node.js的URL结构图"></p>
-<p>Node.js的url模块能够让工程师将一个URL字符串解析成一个对象，它拥有以下属性：</p>
-<ul>
-<li>href - 保存了完整的url地址。要特别注意的是它会将协议以及域名中的大写字母转成小写字母，至于其它位置的字符则会保持原样。这是因为协议以及域名是大小写不分的，为了方便直接全部都转成小写。</li>
-<li>protocol - 小写字母组成的协议类型，比如http:。要特别注意:也是协议的一部份（一直觉得很囧）。</li>
-<li>slashes - 一个布尔值，一般是true，它注明url的协议后边是否拥有两个/字符，有些奇葩URL是不带//的。</li>
-<li>host - 小写字母组成的域名+端口，二者之间有个冒号隔开。如果直接使用IP访问，那么host值就是IP地址，否则就是域名。另外，如果URL上没有写端口那么这里的值跟hostname一致。举个例子：www.host.com:8080。</li>
-<li>auth - URL中附带的认证信息，这个很少使用，毕竟不是很安全。当我们访问一个要求认证的网页时，服务器将会返回http状态码401要求浏览器提供用户认证信息，输入用户名和密码之后它将会在Http请求报文头中以Base64的方式写在Authorization字段中。你也可以使用类似”<a href="http://user:pass/host.com/a.php&quot;的方式直接将用户名和密码（密码可省略，照样弹出窗口让你输入）写在URL中。" target="_blank" rel="external">http://user:pass/host.com/a.php&quot;的方式直接将用户名和密码（密码可省略，照样弹出窗口让你输入）写在URL中。</a></li>
-<li>hostname - 域名，跟host不同的是它不带端口。</li>
-<li>port - 端口，如果没有该值会使用该协议默认端口，比如http(80)、https(443)、ftp(21)、sftp(22)。</li>
-<li>pathname - 请求路径名，它不包含search以及hash。</li>
-<li>search - 查询字符串，在URL表现为类似”?id=1”这种形式，要特别注意的是它包含问号(?)。</li>
-<li>path - 请求路径，它包含pathname以及search部份，比如”/a/b/c.php?id=1”。许多浏览器并不把URL上的hash部份带到服务器，hash部份一般用于标识本页的某个锚点，因此path这一块是会被附在请求头上送到服务器端。</li>
-<li>query - 查询参数，它与search不同之处在于它不带问号，比如”id=1&amp;name=2”。要特别注意的是，使用url.parse解析一个url的时候可以通过设置参数来决定是否对search做解析，如果将parseQueryString参数设置为true，query将会是一个对象，它用键值对的方式保存了search里包含的数据，比如{ id: 1, name: 2 }</li>
-<li>hash - 锚点，在URL处于末尾，由#号开始。在平时的网页URL中，浏览器一般不会将其发送到服务器端，它更多的是用在客户端。本意是用于做锚点，可以跳到页面某个特定位置，实际上现在更多的是用来做单页面的路由功能。举例：”#hash”。</li>
-</ul>
-<p>以下是一个完整的URL对象：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> urlObject = &#123;</div><div class="line">    <span class="attr">href</span>: <span class="string">"http://user:pass@host.com:8080/p/a/t/h?query=string#hash"</span>,</div><div class="line">    <span class="attr">protocol</span>: <span class="string">"http:"</span>,</div><div class="line">    <span class="attr">slashes</span>: <span class="literal">true</span>,</div><div class="line">    <span class="attr">auth</span>: <span class="string">'user:pass'</span>,</div><div class="line">    <span class="attr">host</span>: <span class="string">'host.com:8080'</span>,</div><div class="line">    <span class="attr">port</span>: <span class="string">'8080'</span>,</div><div class="line">    <span class="attr">hostname</span>: <span class="string">'host.com'</span>,</div><div class="line">    <span class="attr">hash</span>: <span class="string">'#hash'</span>,</div><div class="line">    <span class="attr">search</span>: <span class="string">'?query=string'</span>,</div><div class="line">    <span class="attr">query</span>: &#123; <span class="attr">query</span>: <span class="string">'string'</span> &#125;, <span class="comment">// 或者 "query=string"</span></div><div class="line">    pathname: <span class="string">'/p/a/t/h'</span>,</div><div class="line">    <span class="attr">path</span>: <span class="string">'/p/a/t/h?query=string'</span>,</div><div class="line">    <span class="attr">href</span>: <span class="string">'http://user:pass@host.com:8080/p/a/t/h?query=string#hash'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h1 id="URL模块API"><a href="#URL模块API" class="headerlink" title="URL模块API"></a>URL模块API</h1><p>URL模块仅提供了3个函数，没有提供类或者其它东西：</p>
-<ul>
-<li>url.format - 将一个包含必要字段的urlObject格式化成一个合法的URL字符串。</li>
-<li>url.parse - 将一个合法的URL字符串转成urlObject，注意URL并不需要包含所有的字段，比如”./“也算是一个URL字符串。</li>
-<li>url.resolve - 拥有from以及to两个参数，自动计算出to相对于from的绝对地址。如果from参数省略，则是将to转换为绝对路径。</li>
-</ul>
-<p>这三个函数除了url.resolve都比较容易理解，至于resolve，手册给出了相应的例子，也比较形象：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">url.resolve(<span class="string">'/one/two/three'</span>, <span class="string">'four'</span>)         <span class="comment">// '/one/two/four'</span></div><div class="line">url.resolve(<span class="string">'http://example.com/'</span>, <span class="string">'/one'</span>)    <span class="comment">// 'http://example.com/one'</span></div><div class="line">url.resolve(<span class="string">'http://example.com/one'</span>, <span class="string">'/two'</span>) <span class="comment">// 'http://example.com/two'</span></div></pre></td></tr></table></figure>
-<h1 id="小贴士"><a href="#小贴士" class="headerlink" title="小贴士"></a>小贴士</h1><ul>
-<li><p>弄清绝对路径的根目录在哪  </p>
-<p>在构建一个页面时为了方便可能会使用绝对路径，绝对路径是以/开头的路径，对绝对路径不大了解的前端可能会就发现直接在服务器上查看HTML文件时正常，但直接双击打开html文件则发生路径错误。这时需要认清这绝对路径的根目录到底是哪里。  </p>
-<p>假设我们的站点放在/wwwroot/mysite，访问地址是<a href="http://mysite.com，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。" target="_blank" rel="external">http://mysite.com，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。</a>  </p>
-<p>这时候访问<a href="http://mysite.com/index.html，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。" target="_blank" rel="external">http://mysite.com/index.html，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。</a>    </p>
-<p>这是因为在使用域名访问index.html时，绝对路径是指<a href="http://mysite.com/，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。" target="_blank" rel="external">http://mysite.com/，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。</a></p>
-</li>
-<li><p>查询字符串的编码  </p>
-<p>请求一个URL时许多人弄不清哪里需要编码哪里不需要编码，甚至还重复编码，这里特地做一下说明。另外，服务器端接收到你的值是不需要解码的，因为服务器本身就会帮你解码了。</p>
-</li>
-</ul>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 在发起请求的时候，queryString每个字段以及它的值都应该被编码，比如"/file?键1=值1&amp;键2=值2"应该这么写（也可以使用encodeURI，但url不能带search和hash部份）：  </span></div><div class="line"><span class="keyword">var</span> url = <span class="string">"/file?"</span> + <span class="built_in">encodeURIComponent</span>(<span class="string">"键1"</span>) + <span class="string">"="</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"值1"</span>) + <span class="string">"&amp;"</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"键2"</span>) + <span class="string">"="</span></div><div class="line">    + <span class="built_in">encodeURIComponent</span>(<span class="string">"值2"</span>);</div><div class="line"><span class="comment">// 当然，如果你确认你的key和value都不会有非ASCII字符以及需要转义的字符，你也可以不编码（如果不知道是否需要编码，一定要编码，有利无害）。另外，如果值是一个url,该url也需要做编码：  </span></div><div class="line"><span class="comment">// value本身是一个url，请对它的key和value编码。由于key的值是"key"，我确认它绝对不需要编码（因为encodeURIComponent("key")值同样是key），所以我就省掉了。</span></div><div class="line"><span class="keyword">var</span> value = <span class="string">"http://www.site.com/?key="</span> + <span class="built_in">encodeURIComponent</span>(<span class="string">"这是中文值"</span>);</div><div class="line"><span class="comment">// url的值为value的值，value的值也需要编码。</span></div><div class="line"><span class="keyword">var</span> url = <span class="string">"http://mysite.com/?url="</span> + <span class="built_in">encodeURIComponent</span>(value);</div></pre></td></tr></table></figure>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="Node.js学习笔记" scheme="https://bennyzheng.github.io/categories/Node-js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
-    
-      <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
-    
-      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
     
   </entry>
   
@@ -529,9 +629,9 @@
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
-    
       <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
+    
+      <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
     
   </entry>
   
@@ -694,9 +794,9 @@
       <category term="Node.js学习笔记" scheme="https://bennyzheng.github.io/categories/Node-js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
-    
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
+    
+      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
       <category term="Stream" scheme="https://bennyzheng.github.io/tags/Stream/"/>
     
