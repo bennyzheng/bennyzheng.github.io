@@ -95,7 +95,7 @@
 <meta property="og:description" content="现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。">
 <meta property="og:image" content="https://bennyzheng.github.io/images/2016/11/endian-1.png">
 <meta property="og:image" content="https://bennyzheng.github.io/images/2016/11/endian-2.png">
-<meta property="og:updated_time" content="2016-12-02T08:18:14.000Z">
+<meta property="og:updated_time" content="2016-12-02T08:19:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据存储方式 - endian">
 <meta name="twitter:description" content="现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。">
@@ -397,7 +397,7 @@
 <ul>
 <li>little-endian</li>
 </ul>
-<p>&nbsp;&nbsp;8位 1010 0000<br>16位 0000 1010 0000 0000<br>32位 0000 1010 0000 0000 0000 0000 0000 0000</p>
+<p>&nbsp;&nbsp;8位 0000 0101<br>16位 0000 1010 0000 0000<br>32位 0000 1010 0000 0000 0000 0000 0000 0000</p>
 <p>从示例中可以看出，如果使用little-endian保存数据，32位的10转成16位的10需要从左到右复制16位，转成8位则是复制8位，后边直接截断不管了，极其方便。而big-endian方式则需要移动位游标再进行复制，性能上是little-endian更高。</p>
 <p>需要提一下的是，网络上传输数据时一率采用big-endian进行传输，这是为了防止数据源跟数据接收端使用的存储方式不同而导致发生数据错乱。</p>
 
