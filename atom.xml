@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://bennyzheng.github.io/"/>
-  <updated>2016-12-12T14:14:25.000Z</updated>
+  <updated>2016-12-12T14:18:49.000Z</updated>
   <id>https://bennyzheng.github.io/</id>
   
   <author>
@@ -19,8 +19,8 @@
     <title>Node.js - 进程学习笔记</title>
     <link href="https://bennyzheng.github.io/archivers/2016/12/node-process/"/>
     <id>https://bennyzheng.github.io/archivers/2016/12/node-process/</id>
-    <published>2016-12-12T14:14:25.000Z</published>
-    <updated>2016-12-12T14:14:25.000Z</updated>
+    <published>2016-12-12T14:18:49.000Z</published>
+    <updated>2016-12-12T14:18:49.000Z</updated>
     
     <content type="html"><![CDATA[<p>我一直都是在浏览器端工作，算是个很普通的Web前端开发工程师，对于进程、线程方面的知识仅限于知识广度需要初步理解，但并没有真正去使用它。</p>
 <p>使用Javascript写应用程序的例子不少，在Windows下可以用Javascript调用系统COM组件读写文件甚至写病毒；在ASP大家默认使用VBScript编写代码，同时也可以使用Javascript。Node.js是做得最好的一个，它让Javascript的世界变得更加丰富多彩，它是专门为Javascript搭建的舞台。</p>
@@ -124,7 +124,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// test.js</span></div><div class="line"><span class="keyword">var</span> child_process = <span class="built_in">require</span>(<span class="string">"child_process"</span>);</div><div class="line"><span class="keyword">var</span> child = child_process.fork(<span class="string">"./child.js"</span>);</div><div class="line"></div><div class="line">child.on(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">message</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"message: %s"</span>, message);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// child.js</span></div><div class="line">process.send(<span class="string">"this is child!"</span>);</div></pre></td></tr></table></figure>
 <p>要注意的是fork是不能通过child.stdout来获取数据的，子进程与父进程是通过IPC通道进行通讯。另外，fork它并不是将当前进程复制一份作为子进程（其它语言都是这么干的），而是指定一个模块建立一个子进程。</p>
-<h2 id="options-stdio"><a href="#options-stdio" class="headerlink" title="options.stdio"></a>options.stdio</h2><p>建立子进程时可以通过设置options参数的stdio指定子进程使用的IO，它的值只可以是一个字符串用于一次性为子进程指定输入输出流也可以使用数组分开为stdin/stdout/stderr指定值，这个参数也是父进程与子进程进行通讯的重要基础。</p>
+<h2 id="子进程输入输出"><a href="#子进程输入输出" class="headerlink" title="子进程输入输出"></a>子进程输入输出</h2><p>建立子进程时可以通过设置options参数的stdio指定子进程使用的IO，它的值只可以是一个字符串用于一次性为子进程指定输入输出流也可以使用数组分开为stdin/stdout/stderr指定值，这个参数也是父进程与子进程进行通讯的重要基础。</p>
 <h3 id="pipe-流管道"><a href="#pipe-流管道" class="headerlink" title="pipe - 流管道"></a>pipe - 流管道</h3><p>默认值，相当于[‘pipe’, ‘pipe’, ‘pipe’]，它会将ChildProcess的输入当成子进程的输入的管道上流，同时将ChildProcess进程的输出当成子进程输出的管道下流。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// test.js</span></div><div class="line"><span class="keyword">var</span> child_process = <span class="built_in">require</span>(<span class="string">"child_process"</span>);</div><div class="line"><span class="keyword">var</span> child = child_process.spawn(<span class="string">"node"</span>, [<span class="string">'./child.js'</span>], &#123;</div><div class="line">    <span class="attr">stdio</span>: <span class="string">'pipe'</span></div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// child.stdin.pipe(子进程.stdin)</span></div><div class="line">child.stdin.write(<span class="string">"hello child!"</span>);</div><div class="line"></div><div class="line">child.stdout.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"父进程的stdout接收到: "</span> + chunk.toString());</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// child.js</span></div><div class="line"><span class="comment">// process.stdout.pipe(ChildParent.stdout)</span></div><div class="line"><span class="comment">// stderr同理</span></div><div class="line">process.stdin.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">    process.stdout.write(<span class="string">"子进程的stdin接收到: "</span> + chunk.toString());</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
@@ -140,7 +140,7 @@
 <p>这个结果看起来并不符合我们的本意，因为主进程调用了child.send向子进程发送”hello child!”却没有输出来，但这是正常的，因为子进程压根就没有开启标准输入输出，test.js代码需要做一下小调整：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> child_process = <span class="built_in">require</span>(<span class="string">"child_process"</span>);</div><div class="line"><span class="keyword">var</span> child = child_process.spawn(<span class="string">"node"</span>, [<span class="string">'./child.js'</span>], &#123;</div><div class="line">    <span class="comment">// 与子进程共享本进程的标准IO，子进程也能够向控制台输出信息了</span></div><div class="line">    stdio: [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="string">'ipc'</span>]</div><div class="line">&#125;);</div><div class="line"></div><div class="line">child.on(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">message</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"master: "</span> + message);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">child.send(<span class="string">"hello child!"</span>);</div></pre></td></tr></table></figure>
 <h3 id="ignore-忽略IO"><a href="#ignore-忽略IO" class="headerlink" title="ignore - 忽略IO"></a>ignore - 忽略IO</h3><p>当给子进程设置标准IO为ignore时，子进程将会把标准IO指向/dev/null，Unix会忽略对这个空设备的读写操作，相当于没有打开任何IO设备，可以单独为某个IO设置ignore值，比如[0, ‘ignore’, ‘ignore’]。</p>
-<h2 id="options-detached"><a href="#options-detached" class="headerlink" title="options.detached"></a>options.detached</h2><p>detached默认为false，意味着子进程依附父进程运行，当父进程中断退出时子进程也会随之退出，父进程也会等待所有子进程退出运行才退出运行。如果将detached设置为true，那么父进程退出时子进程是不会退出运行的，它是一个独立的进程，父进程调用child.unref方法可以让子进程从父进程的事件循环中删除，父进程可以独立退出运行而不影响子进程。</p>
+<h2 id="独立子进程"><a href="#独立子进程" class="headerlink" title="独立子进程"></a>独立子进程</h2><p>detached默认为false，意味着子进程依附父进程运行，当父进程中断退出时子进程也会随之退出，父进程也会等待所有子进程退出运行才退出运行。如果将detached设置为true，那么父进程退出时子进程是不会退出运行的，它是一个独立的进程，父进程调用child.unref方法可以让子进程从父进程的事件循环中删除，父进程可以独立退出运行而不影响子进程。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// test.js</span></div><div class="line"><span class="keyword">var</span> child_process = <span class="built_in">require</span>(<span class="string">"child_process"</span>);</div><div class="line"><span class="comment">// var fs = require("fs");</span></div><div class="line"><span class="comment">// var outFile = fs.openSync("./out.log", "a");</span></div><div class="line"><span class="keyword">var</span> child = child_process.spawn(<span class="string">"node"</span>, [<span class="string">'./child.js'</span>], &#123;</div><div class="line">    <span class="comment">// stdio: ['ignore', outFile, 'ignore'],</span></div><div class="line">    detached: <span class="literal">true</span>,</div><div class="line">    <span class="attr">stdio</span>: <span class="string">'inherit'</span></div><div class="line">&#125;);</div><div class="line"></div><div class="line">child.unref();</div><div class="line"><span class="built_in">console</span>.log(<span class="string">"master exit!"</span>);</div></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"child exit!"</span>);</div><div class="line">&#125;, <span class="number">1000</span>);</div></pre></td></tr></table></figure>
 <p>有文章说stdio必须设置为ignore或者另开一个套接字，不能使用父进程的stdio，否则会导致高用child.unref方法时父进程还会等待子进程退出才退出，但我实际测试了并没有这种情况，或许是版本问题，我使用的是v7.0.0，如果发生这种情况可以按示例中注释掉的代码将子进程的stdout重定向到一个文件中。</p>
@@ -446,9 +446,9 @@
       <category term="javascript" scheme="https://bennyzheng.github.io/categories/javascript/"/>
     
     
-      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
-    
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
+    
+      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
       <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
     
@@ -637,13 +637,13 @@
       <category term="javascript" scheme="https://bennyzheng.github.io/categories/javascript/"/>
     
     
+      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
+    
       <category term="TypeArray" scheme="https://bennyzheng.github.io/tags/TypeArray/"/>
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
       <category term="ArrayBuffer" scheme="https://bennyzheng.github.io/tags/ArrayBuffer/"/>
-    
-      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
   </entry>
   
@@ -707,9 +707,9 @@
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
-    
       <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
+    
+      <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
     
   </entry>
   
@@ -807,9 +807,9 @@
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
-    
       <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
+    
+      <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
     
   </entry>
   
@@ -972,13 +972,13 @@
       <category term="Node.js学习笔记" scheme="https://bennyzheng.github.io/categories/Node-js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
-    
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
-      <category term="Stream" scheme="https://bennyzheng.github.io/tags/Stream/"/>
+      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
       <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
+    
+      <category term="Stream" scheme="https://bennyzheng.github.io/tags/Stream/"/>
     
   </entry>
   
