@@ -95,11 +95,13 @@
 <meta property="og:site_name" content="思考与记录">
 <meta property="og:description" content="我一直都是在浏览器端工作，算是个很普通的Web前端开发工程师，对于进程、线程方面的知识仅限于知识广度需要初步理解，但并没有真正去使用它。
 使用Javascript写应用程序的例子不少，在Windows下可以用Javascript调用系统COM组件读写文件甚至写病毒；在ASP大家默认使用VBScript编写代码，同时也可以使用Javascript。Node.js是做得最好的一个，它让Javascri">
-<meta property="og:updated_time" content="2016-12-12T14:18:49.000Z">
+<meta property="og:image" content="https://bennyzheng.github.io/images/2016/process-status.gif">
+<meta property="og:updated_time" content="2016-12-13T03:34:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Node.js - 进程学习笔记">
 <meta name="twitter:description" content="我一直都是在浏览器端工作，算是个很普通的Web前端开发工程师，对于进程、线程方面的知识仅限于知识广度需要初步理解，但并没有真正去使用它。
 使用Javascript写应用程序的例子不少，在Windows下可以用Javascript调用系统COM组件读写文件甚至写病毒；在ASP大家默认使用VBScript编写代码，同时也可以使用Javascript。Node.js是做得最好的一个，它让Javascri">
+<meta name="twitter:image" content="https://bennyzheng.github.io/images/2016/process-status.gif">
 
 
 
@@ -314,8 +316,8 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-12T22:18:49+08:00">
-                2016年12月12日
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-13T11:34:53+08:00">
+                2016年12月13日
               </time>
             
 
@@ -381,6 +383,15 @@
 <p>process是Node.js提供给用户与当前进程交互的全局对象，你可以在任何地方使用它而不需要require任何模块。process是emitEvent的一个实例，意味着它拥有事件机制。我发现Node.js是个类都是emitEvent的子类，是个对象都是emitEvent的实例，毕竟Node.js许多东西都建立在事件驱动的理念上，同时也意味着在Node.js使用费时的同步操作基本上是个愚蠢的做法。</p>
 <p>child_process模块则是Node.js提供给父进程使用的模块，想要学习进程相关的操作，process对象与child_process模块都是得一起研究的。</p>
 <a id="more"></a>
+<h1 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h1><p>一个进程拥有五种状态，在运行期间总会处于其中的一种，并且在各种状态之间互相转换。</p>
+<ul>
+<li>创建状态 - 当运行一个应用程序的时候，它并不是直接就开始运行，系统需要将它的必要信息读入内存，为其分配各种资源比如堆栈、代码区，这个初始化的过程被称为创建状态。</li>
+<li>就绪状态 - 当一个应用程序所有资源都处于就绪状态，但由于CPU正在为其它应用程序服务时，它就处于就绪状态。当CPU空闲下来，有资源为该进程提供服务时，就绪状态就会结束进入运行状态。</li>
+<li>运行状态 - 应用程序所有资源都就绪，并且CPU分配资源为它做计算时称为运行状态。</li>
+<li>阻塞状态 - 应用程序可能由于某个资源未就绪而无法继续运行时就是阻塞状态，这个资源不包括CPU资源（否则就是就绪状态了）。这种状态下应用程序很可能在等待一个系统信号，比如一个socket连接。一个最简单的Web服务器在监听端口但没请求进来的时候就应该处于这种阻塞状态，它不退出，但也不占用CPU资源。阻塞状态如果由于资源到位（比如接收到一个信号），这时候就重新进入就绪状态，等到CPU资源到位进入运行状态。</li>
+<li>退出状态 - 当应用程序由于没有任何需要处理的任务或者接收到退出信号时，系统将会将应用程序置为退出状态，为它释放各种资源，从内存中删除。</li>
+</ul>
+<p><img src="/images/2016/process-status.gif" alt="进程状态转换图"></p>
 <h1 id="输入与输出"><a href="#输入与输出" class="headerlink" title="输入与输出"></a>输入与输出</h1><p>Javascript在许多宿主环境中由于安全限制没有得到文件读写权限，也没有标准的输入输出，但在Node.js中运行则不一样，这真正是个应用程序，因此可以像其它编程语言一般访问到标准输入输出设备。</p>
 <p>标准IO设备其实就是三个启动应用程序时就默认打开的文件：</p>
 <ul>
@@ -395,14 +406,6 @@
 <p>这段代码将在控制台输出类似这样的内容：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">(node:1330) Warning: this is warning</div><div class="line">&#123; Warning: this is warning</div><div class="line">    at Object.&lt;anonymous&gt; (/wwwroot/github/bennyzheng.github.io.src/test.js:5:9)</div><div class="line">    at Module._compile (module.js:573:32)</div><div class="line">    at Object.Module._extensions..js (module.js:582:10)</div><div class="line">    at Module.load (module.js:490:32)</div><div class="line">    at tryModuleLoad (module.js:449:12)</div><div class="line">    at Function.Module._load (module.js:441:3)</div><div class="line">    at Module.runMain (module.js:607:10)</div><div class="line">    at run (bootstrap_node.js:382:7)</div><div class="line">    at startup (bootstrap_node.js:137:9)</div><div class="line">    at bootstrap_node.js:497:3 name: &apos;Warning&apos; &#125;</div></pre></td></tr></table></figure>
 <p>其中第一行是emitWarning函数调用输出的，而在warning事件响应中把事件对象输出则会将警告的详细调用堆栈信息输出。要特别注意的是emitWarning输出的内容是输出到stderr设备中，console.log则是将内容输出到stdout。</p>
-<h1 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h1><p>一个进程拥有五种状态，在运行期间总会处于其中的一种，并且在各种状态之间互相转换。</p>
-<ul>
-<li>创建状态 - 当运行一个应用程序的时候，它并不是直接就开始运行，系统需要将它的必要信息读入内存，为其分配各种资源比如堆栈、代码区，这个初始化的过程被称为创建状态。</li>
-<li>就绪状态 - 当一个应用程序所有资源都处于就绪状态，但由于CPU正在为其它应用程序服务时，它就处于就绪状态。当CPU空闲下来，有资源为该进程提供服务时，就绪状态就会结束进入运行状态。</li>
-<li>运行状态 - 应用程序所有资源都就绪，并且CPU分配资源为它做计算时称为运行状态。</li>
-<li>阻塞状态 - 应用程序可能由于某个资源未就绪而无法继续运行时就是阻塞状态，这个资源不包括CPU资源（否则就是就绪状态了）。这种状态下应用程序很可能在等待一个系统信号，比如一个socket连接。一个最简单的Web服务器在监听端口但没请求进来的时候就应该处于这种阻塞状态，它不退出，但也不占用CPU资源。阻塞状态如果由于资源到位（比如接收到一个信号），这时候就重新进入就绪状态，等到CPU资源到位进入运行状态。</li>
-<li>退出状态 - 当应用程序由于没有任何需要处理的任务或者接收到退出信号时，系统将会将应用程序置为退出状态，为它释放各种资源，从内存中删除。</li>
-</ul>
 <h1 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h1><p>Node.js环境下的应用程序在默认情况下如果发生错误将会马上报错并且退出程序，一般来说可以通过try-catch来捕获错误:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;, <span class="number">5000</span>);</div><div class="line"></div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">"my error"</span>);</div><div class="line">&#125;<span class="keyword">catch</span>(ex) &#123;</div><div class="line">    <span class="built_in">console</span>.log(ex.message);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>try-catch会将异常捕获，并且把ex当参数传给catch代码块，可以在里边做异常处理。当然，如果有需要，在catch代码块中对异常做完处理之后也可以再使用throw抛出错误。</p>
@@ -740,7 +743,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#输入与输出"><span class="nav-number">1.</span> <span class="nav-text">输入与输出</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#生命周期"><span class="nav-number">2.</span> <span class="nav-text">生命周期</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#异常处理"><span class="nav-number">3.</span> <span class="nav-text">异常处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#退出处理"><span class="nav-number">4.</span> <span class="nav-text">退出处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#延迟执行任务"><span class="nav-number">5.</span> <span class="nav-text">延迟执行任务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数处理"><span class="nav-number">6.</span> <span class="nav-text">参数处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#子进程"><span class="nav-number">7.</span> <span class="nav-text">子进程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#建立子进程"><span class="nav-number">7.1.</span> <span class="nav-text">建立子进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子进程输入输出"><span class="nav-number">7.2.</span> <span class="nav-text">子进程输入输出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pipe-流管道"><span class="nav-number">7.2.1.</span> <span class="nav-text">pipe - 流管道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#inherit-共享IO"><span class="nav-number">7.2.2.</span> <span class="nav-text">inherit - 共享IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ipc-进程间通信"><span class="nav-number">7.2.3.</span> <span class="nav-text">ipc - 进程间通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ignore-忽略IO"><span class="nav-number">7.2.4.</span> <span class="nav-text">ignore - 忽略IO</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#独立子进程"><span class="nav-number">7.3.</span> <span class="nav-text">独立子进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子进程事件"><span class="nav-number">7.4.</span> <span class="nav-text">子进程事件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程信号"><span class="nav-number">8.</span> <span class="nav-text">进程信号</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#生命周期"><span class="nav-number">1.</span> <span class="nav-text">生命周期</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#输入与输出"><span class="nav-number">2.</span> <span class="nav-text">输入与输出</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#异常处理"><span class="nav-number">3.</span> <span class="nav-text">异常处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#退出处理"><span class="nav-number">4.</span> <span class="nav-text">退出处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#延迟执行任务"><span class="nav-number">5.</span> <span class="nav-text">延迟执行任务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数处理"><span class="nav-number">6.</span> <span class="nav-text">参数处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#子进程"><span class="nav-number">7.</span> <span class="nav-text">子进程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#建立子进程"><span class="nav-number">7.1.</span> <span class="nav-text">建立子进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子进程输入输出"><span class="nav-number">7.2.</span> <span class="nav-text">子进程输入输出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pipe-流管道"><span class="nav-number">7.2.1.</span> <span class="nav-text">pipe - 流管道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#inherit-共享IO"><span class="nav-number">7.2.2.</span> <span class="nav-text">inherit - 共享IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ipc-进程间通信"><span class="nav-number">7.2.3.</span> <span class="nav-text">ipc - 进程间通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ignore-忽略IO"><span class="nav-number">7.2.4.</span> <span class="nav-text">ignore - 忽略IO</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#独立子进程"><span class="nav-number">7.3.</span> <span class="nav-text">独立子进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子进程事件"><span class="nav-number">7.4.</span> <span class="nav-text">子进程事件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程信号"><span class="nav-number">8.</span> <span class="nav-text">进程信号</span></a></li></ol></div>
             
 
           </div>

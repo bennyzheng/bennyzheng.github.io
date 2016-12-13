@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://bennyzheng.github.io/"/>
-  <updated>2016-12-12T14:18:49.000Z</updated>
+  <updated>2016-12-13T03:34:53.000Z</updated>
   <id>https://bennyzheng.github.io/</id>
   
   <author>
@@ -19,8 +19,8 @@
     <title>Node.js - 进程学习笔记</title>
     <link href="https://bennyzheng.github.io/archivers/2016/12/node-process/"/>
     <id>https://bennyzheng.github.io/archivers/2016/12/node-process/</id>
-    <published>2016-12-12T14:18:49.000Z</published>
-    <updated>2016-12-12T14:18:49.000Z</updated>
+    <published>2016-12-13T03:34:53.000Z</published>
+    <updated>2016-12-13T03:34:53.000Z</updated>
     
     <content type="html"><![CDATA[<p>我一直都是在浏览器端工作，算是个很普通的Web前端开发工程师，对于进程、线程方面的知识仅限于知识广度需要初步理解，但并没有真正去使用它。</p>
 <p>使用Javascript写应用程序的例子不少，在Windows下可以用Javascript调用系统COM组件读写文件甚至写病毒；在ASP大家默认使用VBScript编写代码，同时也可以使用Javascript。Node.js是做得最好的一个，它让Javascript的世界变得更加丰富多彩，它是专门为Javascript搭建的舞台。</p>
@@ -28,6 +28,15 @@
 <p>process是Node.js提供给用户与当前进程交互的全局对象，你可以在任何地方使用它而不需要require任何模块。process是emitEvent的一个实例，意味着它拥有事件机制。我发现Node.js是个类都是emitEvent的子类，是个对象都是emitEvent的实例，毕竟Node.js许多东西都建立在事件驱动的理念上，同时也意味着在Node.js使用费时的同步操作基本上是个愚蠢的做法。</p>
 <p>child_process模块则是Node.js提供给父进程使用的模块，想要学习进程相关的操作，process对象与child_process模块都是得一起研究的。</p>
 <a id="more"></a>
+<h1 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h1><p>一个进程拥有五种状态，在运行期间总会处于其中的一种，并且在各种状态之间互相转换。</p>
+<ul>
+<li>创建状态 - 当运行一个应用程序的时候，它并不是直接就开始运行，系统需要将它的必要信息读入内存，为其分配各种资源比如堆栈、代码区，这个初始化的过程被称为创建状态。</li>
+<li>就绪状态 - 当一个应用程序所有资源都处于就绪状态，但由于CPU正在为其它应用程序服务时，它就处于就绪状态。当CPU空闲下来，有资源为该进程提供服务时，就绪状态就会结束进入运行状态。</li>
+<li>运行状态 - 应用程序所有资源都就绪，并且CPU分配资源为它做计算时称为运行状态。</li>
+<li>阻塞状态 - 应用程序可能由于某个资源未就绪而无法继续运行时就是阻塞状态，这个资源不包括CPU资源（否则就是就绪状态了）。这种状态下应用程序很可能在等待一个系统信号，比如一个socket连接。一个最简单的Web服务器在监听端口但没请求进来的时候就应该处于这种阻塞状态，它不退出，但也不占用CPU资源。阻塞状态如果由于资源到位（比如接收到一个信号），这时候就重新进入就绪状态，等到CPU资源到位进入运行状态。</li>
+<li>退出状态 - 当应用程序由于没有任何需要处理的任务或者接收到退出信号时，系统将会将应用程序置为退出状态，为它释放各种资源，从内存中删除。</li>
+</ul>
+<p><img src="/images/2016/process-status.gif" alt="进程状态转换图"></p>
 <h1 id="输入与输出"><a href="#输入与输出" class="headerlink" title="输入与输出"></a>输入与输出</h1><p>Javascript在许多宿主环境中由于安全限制没有得到文件读写权限，也没有标准的输入输出，但在Node.js中运行则不一样，这真正是个应用程序，因此可以像其它编程语言一般访问到标准输入输出设备。</p>
 <p>标准IO设备其实就是三个启动应用程序时就默认打开的文件：</p>
 <ul>
@@ -42,14 +51,6 @@
 <p>这段代码将在控制台输出类似这样的内容：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">(node:1330) Warning: this is warning</div><div class="line">&#123; Warning: this is warning</div><div class="line">    at Object.&lt;anonymous&gt; (/wwwroot/github/bennyzheng.github.io.src/test.js:5:9)</div><div class="line">    at Module._compile (module.js:573:32)</div><div class="line">    at Object.Module._extensions..js (module.js:582:10)</div><div class="line">    at Module.load (module.js:490:32)</div><div class="line">    at tryModuleLoad (module.js:449:12)</div><div class="line">    at Function.Module._load (module.js:441:3)</div><div class="line">    at Module.runMain (module.js:607:10)</div><div class="line">    at run (bootstrap_node.js:382:7)</div><div class="line">    at startup (bootstrap_node.js:137:9)</div><div class="line">    at bootstrap_node.js:497:3 name: &apos;Warning&apos; &#125;</div></pre></td></tr></table></figure>
 <p>其中第一行是emitWarning函数调用输出的，而在warning事件响应中把事件对象输出则会将警告的详细调用堆栈信息输出。要特别注意的是emitWarning输出的内容是输出到stderr设备中，console.log则是将内容输出到stdout。</p>
-<h1 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h1><p>一个进程拥有五种状态，在运行期间总会处于其中的一种，并且在各种状态之间互相转换。</p>
-<ul>
-<li>创建状态 - 当运行一个应用程序的时候，它并不是直接就开始运行，系统需要将它的必要信息读入内存，为其分配各种资源比如堆栈、代码区，这个初始化的过程被称为创建状态。</li>
-<li>就绪状态 - 当一个应用程序所有资源都处于就绪状态，但由于CPU正在为其它应用程序服务时，它就处于就绪状态。当CPU空闲下来，有资源为该进程提供服务时，就绪状态就会结束进入运行状态。</li>
-<li>运行状态 - 应用程序所有资源都就绪，并且CPU分配资源为它做计算时称为运行状态。</li>
-<li>阻塞状态 - 应用程序可能由于某个资源未就绪而无法继续运行时就是阻塞状态，这个资源不包括CPU资源（否则就是就绪状态了）。这种状态下应用程序很可能在等待一个系统信号，比如一个socket连接。一个最简单的Web服务器在监听端口但没请求进来的时候就应该处于这种阻塞状态，它不退出，但也不占用CPU资源。阻塞状态如果由于资源到位（比如接收到一个信号），这时候就重新进入就绪状态，等到CPU资源到位进入运行状态。</li>
-<li>退出状态 - 当应用程序由于没有任何需要处理的任务或者接收到退出信号时，系统将会将应用程序置为退出状态，为它释放各种资源，从内存中删除。</li>
-</ul>
 <h1 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h1><p>Node.js环境下的应用程序在默认情况下如果发生错误将会马上报错并且退出程序，一般来说可以通过try-catch来捕获错误:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;, <span class="number">5000</span>);</div><div class="line"></div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">"my error"</span>);</div><div class="line">&#125;<span class="keyword">catch</span>(ex) &#123;</div><div class="line">    <span class="built_in">console</span>.log(ex.message);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>try-catch会将异常捕获，并且把ex当参数传给catch代码块，可以在里边做异常处理。当然，如果有需要，在catch代码块中对异常做完处理之后也可以再使用throw抛出错误。</p>
@@ -296,16 +297,16 @@
     <link href="https://bennyzheng.github.io/archivers/2016/11/endian/"/>
     <id>https://bennyzheng.github.io/archivers/2016/11/endian/</id>
     <published>2016-11-22T16:00:00.000Z</published>
-    <updated>2016-12-02T08:19:53.000Z</updated>
+    <updated>2016-12-13T03:33:52.000Z</updated>
     
     <content type="html"><![CDATA[<p>现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。<br><a id="more"></a><br>数据在内存中是以二进制方式存储的，一个字节可以存储一个8位的整型，有符号整型可以存储-128至127，而无符号整型可以存储0-255。无符号整型255写成二进制以及十六进制形式是：</p>
 <p>1111 1111<br>F    F</p>
 <p>也就是范围用16进制表示是0x00至0xff，我们后边就用两个16进制的字符来表示一个字节的值。</p>
 <p>网上有篇文章讲解endian，使用了0x12345678作为例子，我觉得非常好，事实上我也是参考了那篇文章，并把自己的理解写在这。这个数字是8个16进制字符，按2个字符1个字节算其实它就是一个32位的无符号整型，即4个字节，按照我们的书写习惯它应该是这么写的：</p>
-<p><img src="/images/2016/11/endian-1.png" alt="big-endian"></p>
+<p><img src="/images/2016/endian-1.png" alt="big-endian"></p>
 <p>这种写法被称为big-endian，它的存储原则是高位优先，从高位字节到低位字节按顺序写到相邻的四个字节中，PowerPC采用的正是这种方式。</p>
 <p>Intel采用是little-endian，它的存储原则是低位优先，从低位字节到高拉字节按顺序写到相邻的四个字节中，也就是big-endian反过来：</p>
-<p><img src="/images/2016/11/endian-2.png" alt="little-endian"></p>
+<p><img src="/images/2016/endian-2.png" alt="little-endian"></p>
 <p>二者到底有什么优缺点呢？</p>
 <ul>
 <li>big-endian相对来说更符合人类阅读习惯</li>
@@ -446,9 +447,9 @@
       <category term="javascript" scheme="https://bennyzheng.github.io/categories/javascript/"/>
     
     
-      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
-    
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
+    
+      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
       <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
     
@@ -637,13 +638,13 @@
       <category term="javascript" scheme="https://bennyzheng.github.io/categories/javascript/"/>
     
     
-      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
-    
       <category term="TypeArray" scheme="https://bennyzheng.github.io/tags/TypeArray/"/>
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
       <category term="ArrayBuffer" scheme="https://bennyzheng.github.io/tags/ArrayBuffer/"/>
+    
+      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
   </entry>
   
@@ -652,11 +653,11 @@
     <link href="https://bennyzheng.github.io/archivers/2016/11/node-url/"/>
     <id>https://bennyzheng.github.io/archivers/2016/11/node-url/</id>
     <published>2016-11-19T16:00:00.000Z</published>
-    <updated>2016-11-24T14:18:50.000Z</updated>
+    <updated>2016-12-13T03:33:42.000Z</updated>
     
     <content type="html"><![CDATA[<p>URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。<br><a id="more"></a></p>
 <h1 id="URL的结构"><a href="#URL的结构" class="headerlink" title="URL的结构"></a>URL的结构</h1><p>Node.js手册非常形象的使用了下方这张图片作为解读URL结构的示例，图中很清楚地为我们构造出一个完整的URL应该是长什么样的。</p>
-<p><img src="/images/2016/11/url.png" alt="Node.js的URL结构图"></p>
+<p><img src="/images/2016/url.png" alt="Node.js的URL结构图"></p>
 <p>Node.js的url模块能够让工程师将一个URL字符串解析成一个对象，它拥有以下属性：</p>
 <ul>
 <li>href - 保存了完整的url地址。要特别注意的是它会将协议以及域名中的大写字母转成小写字母，至于其它位置的字符则会保持原样。这是因为协议以及域名是大小写不分的，为了方便直接全部都转成小写。</li>
@@ -972,9 +973,9 @@
       <category term="Node.js学习笔记" scheme="https://bennyzheng.github.io/categories/Node-js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
-    
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
+    
+      <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
       <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
     
