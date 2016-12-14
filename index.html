@@ -273,6 +273,185 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/12/try-catch/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="benny zheng">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/face.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="思考与记录">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/archivers/2016/12/try-catch/" itemprop="url">
+                  如何降低try-catch对性能的影响
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-14T11:56:11+08:00">
+                2016年12月14日
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/javascript/" itemprop="url" rel="index">
+                    <span itemprop="name">javascript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/archivers/2016/12/try-catch/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="archivers/2016/12/try-catch/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>一直都知道try-catch对代码运行速度会有影响，今天刚好有这方面的尝试，于是试验了一下，试验场景是：</p>
+<ol>
+<li>不使用try-catch</li>
+<li>try-catch内部费时代码是否放到函数中时性能区别<ul>
+<li>直接将费时代码放在try-catch中</li>
+<li>将费时代码放入内置函数中</li>
+<li>将费时代码放到外部函数中进行调用</li>
+</ul>
+</li>
+<li>try-catch内部是否引用外部变量时性能区别<ul>
+<li>引用外部变量</li>
+<li>不引用外部变量</li>
+</ul>
+</li>
+<li>try-catch是否放在子作用域时性能区别<ul>
+<li>放在子作用域</li>
+<li>不放在子作用域</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 执行99999999次的取模</span></div><div class="line"><span class="keyword">var</span> time = <span class="number">99999999</span>;</div><div class="line"></div><div class="line"><span class="comment">// 不使用try-catch</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">test1</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> value = <span class="number">0</span>;</div><div class="line">    <span class="keyword">var</span> obj = &#123;&#125;;</div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"test1"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; time; i++) &#123;</div><div class="line">        value = i % <span class="number">5</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"test1"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// try-catch内部有无费时代码时性能区别</span></div><div class="line"><span class="comment">// 直接将费时代码放在try-catch中</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">test2</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> value = <span class="number">0</span>;</div><div class="line">    <span class="keyword">var</span> obj = &#123;&#125;;</div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"test2"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; time; i++) &#123;</div><div class="line">            value = i % <span class="number">5</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;<span class="keyword">catch</span>(ex)&#123;&#125;</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"test2"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// try-catch内部有无费时代码时性能区别</span></div><div class="line"><span class="comment">// 将费时代码放入内置函数中</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">test3</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> value = <span class="number">0</span>;</div><div class="line">    <span class="keyword">var</span> obj = &#123;&#125;;</div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"test3"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        (<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; time; i++) &#123;</div><div class="line">                value = i % <span class="number">5</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            obj.value = value;</div><div class="line">        &#125;)();</div><div class="line">    &#125;<span class="keyword">catch</span>(ex)&#123;&#125;</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"test3"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// try-catch内部有无费时代码时性能区别</span></div><div class="line"><span class="comment">// 将费时代码放到外部函数中进行调用</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">test4</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> value = <span class="number">0</span>;</div><div class="line">    <span class="keyword">var</span> obj = &#123;&#125;;</div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"test4"</span>);</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; time; i++) &#123;</div><div class="line">            value = i % <span class="number">5</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        obj.value = value;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        fn();</div><div class="line">    &#125;<span class="keyword">catch</span>(ex)&#123;&#125;</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"test4"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// try-catch内部是否引用外部变量时性能区别</span></div><div class="line"><span class="comment">// 引用外部变量</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">test5</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> value = <span class="number">0</span>;</div><div class="line">    <span class="keyword">var</span> obj = &#123;&#125;;</div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"test5"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; time; i++) &#123;</div><div class="line">        value = i % <span class="number">5</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        obj.value = value;</div><div class="line">    &#125;<span class="keyword">catch</span>(ex)&#123;&#125;</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"test5"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// try-catch内部是否引用外部变量时性能区别</span></div><div class="line"><span class="comment">// 不引用外部变量</span></div><div class="line"><span class="comment">// 以及</span></div><div class="line"><span class="comment">// try-catch是否放在子作用域时性能区别</span></div><div class="line"><span class="comment">// 不放在子作用域</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">test6</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> value = <span class="number">0</span>;</div><div class="line">    <span class="keyword">var</span> obj = &#123;&#125;;</div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"test6"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; time; i++) &#123;</div><div class="line">        value = i % <span class="number">5</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    obj.value = value;</div><div class="line"></div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">    &#125;<span class="keyword">catch</span>(ex)&#123;&#125;</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"test6"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// try-catch是否放在子作用域时性能区别</span></div><div class="line"><span class="comment">// 放在子作用域</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">test7</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> value = <span class="number">0</span>;</div><div class="line">    <span class="keyword">var</span> obj = &#123;&#125;;</div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"test7"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; time; i++) &#123;</div><div class="line">        value = i % <span class="number">5</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    obj.value = value;</div><div class="line"></div><div class="line">    (<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">        &#125;<span class="keyword">catch</span>(ex)&#123;&#125;</div><div class="line">    &#125;)();</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"test7"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">test1();</div><div class="line">test2();</div><div class="line">test3();</div><div class="line">test4();</div><div class="line">test5();</div><div class="line">test6();</div><div class="line">test7();</div></pre></td></tr></table></figure>
+<p>在我的机子上运行多次后得出类似这样的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">test1: 49.595ms</div><div class="line">test2: 345.197ms</div><div class="line">test3: 213.598ms</div><div class="line">test4: 182.665ms</div><div class="line">test5: 441.871ms</div><div class="line">test6: 449.331ms</div><div class="line">test7: 155.332ms</div></pre></td></tr></table></figure>
+<p>基本上可以得出初步结论：</p>
+<ol>
+<li>尽量不使用try-catch，性能确实影响相当大</li>
+<li>try-catch内部代码尽可能使用外部函数调用</li>
+<li>try-catch应该使用函数包起来，对性能提升明显</li>
+</ol>
+<p>在这里还有个疑问，如果try-catch使用函数包起来之后还引用了外部变量，那么它的表现如何？改一下test7的代码试试：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// try-catch是否放在子作用域时性能区别</span></div><div class="line"><span class="comment">// 放在子作用域并引用外部变量</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">test8</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> value = <span class="number">0</span>;</div><div class="line">    <span class="keyword">var</span> obj = &#123;&#125;;</div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"test8"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; time; i++) &#123;</div><div class="line">        value = i % <span class="number">5</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    (<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            obj.value = value;</div><div class="line">        &#125;<span class="keyword">catch</span>(ex)&#123;&#125;</div><div class="line">    &#125;)();</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"test8"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>增加了test8，再次运行之后结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">test1: 44.163ms</div><div class="line">test2: 355.606ms</div><div class="line">test3: 205.943ms</div><div class="line">test4: 176.373ms</div><div class="line">test5: 430.764ms</div><div class="line">test6: 462.929ms</div><div class="line">test7: 156.136ms</div><div class="line">test8: 181.711ms</div></pre></td></tr></table></figure>
+<p>结果显示确实是有影响，所以要尽量保持里边环境的纯净。</p>
+<p>可以看出，如果引用了外部变量性能确实还是会降低。</p>
+<p>另外，有个现象我实在解释不清，将test7再改改，把obj.value = value;那行去掉，变成test9运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">test1: 52.285ms</div><div class="line">test2: 348.937ms</div><div class="line">test3: 206.904ms</div><div class="line">test4: 185.531ms</div><div class="line">test5: 440.402ms</div><div class="line">test6: 443.279ms</div><div class="line">test7: 158.451ms</div><div class="line">test8: 181.181ms</div><div class="line">test9: 50.711ms</div></pre></td></tr></table></figure>
+<p>这什么情况啊！！！！！！！！！！！！！谁知道请告知。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/12/node-process/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -313,7 +492,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-13T11:34:53+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-13T17:18:04+08:00">
                 2016年12月13日
               </time>
             
@@ -1477,7 +1656,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archivers">
-              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-count">9</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1494,7 +1673,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
