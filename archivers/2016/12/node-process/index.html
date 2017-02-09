@@ -96,7 +96,7 @@
 <meta property="og:description" content="我一直都是在浏览器端工作，算是个很普通的Web前端开发工程师，对于进程、线程方面的知识仅限于知识广度需要初步理解，但并没有真正去使用它。
 使用Javascript写应用程序的例子不少，在Windows下可以用Javascript调用系统COM组件读写文件甚至写病毒；在ASP大家默认使用VBScript编写代码，同时也可以使用Javascript。Node.js是做得最好的一个，它让Javascri">
 <meta property="og:image" content="https://bennyzheng.github.io/images/2016/process-status.gif">
-<meta property="og:updated_time" content="2016-12-13T09:18:04.000Z">
+<meta property="og:updated_time" content="2016-12-16T06:49:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Node.js - 进程学习笔记">
 <meta name="twitter:description" content="我一直都是在浏览器端工作，算是个很普通的Web前端开发工程师，对于进程、线程方面的知识仅限于知识广度需要初步理解，但并没有真正去使用它。
@@ -316,8 +316,8 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-13T17:18:04+08:00">
-                2016年12月13日
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-14T14:57:49+08:00">
+                2016年12月14日
               </time>
             
 
@@ -409,8 +409,6 @@
 <h1 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h1><p>Node.js环境下的应用程序在默认情况下如果发生错误将会马上报错并且退出程序，一般来说可以通过try-catch来捕获错误:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;, <span class="number">5000</span>);</div><div class="line"></div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">"my error"</span>);</div><div class="line">&#125;<span class="keyword">catch</span>(ex) &#123;</div><div class="line">    <span class="built_in">console</span>.log(ex.message);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>try-catch会将异常捕获，并且把ex当参数传给catch代码块，可以在里边做异常处理。当然，如果有需要，在catch代码块中对异常做完处理之后也可以再使用throw抛出错误。</p>
-<p>try-catch对性能是相当有影响的，使用时需要将它放到一个尽可能小的作用域下以减少这种影响：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> value = <span class="number">0</span>;</div><div class="line">    <span class="keyword">var</span> obj = &#123;&#125;;</div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"test"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; time; i++) &#123;</div><div class="line">        value = i % <span class="number">2</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    (<span class="function"><span class="keyword">function</span>(<span class="params">value</span>) </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            obj.value = value;</div><div class="line">        &#125; <span class="keyword">catch</span>(ex)&#123;&#125;</div><div class="line">    &#125;)(value, obj);</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"test"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>除了try-catch，进程对象还提供了uncaughtException事件用于捕获未使用try-catch捕获的异常并对其做统一处理：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;, <span class="number">5000</span>);</div><div class="line"></div><div class="line">process.on(<span class="string">"uncaughtException"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</div><div class="line">   <span class="built_in">console</span>.error(<span class="string">'报错了'</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">"error"</span>);</div></pre></td></tr></table></figure>
 <p>除了uncaughtException还有另一个事件unhandledRejection也极其类似，它与uncaughtException不同的是uncaughtException用于捕获同步代码抛出的异常，而unhandledRejection用于捕获Promise代码中的异常。</p>
@@ -476,7 +474,7 @@
 <p>spawn默认不会新建shell，但你可以将options的shell选项设置为true或者设置为某个shell的地址启用shell，在这方面算是比较自由。但这并不是spawn与exec区别最大的地方，exec/execFile会将命令执行完再将stdout/stderr的内容当成参数传递给回调函数，它们能够传递的内容比较有限，在没更改options的设置值的情况下是200KB的缓冲区，如果产生的内容超出200KB则会报错。spawn则可以通过stdout/stderr流来获取数据，比如调用curl下载远程文件并保存内容。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> child_process = <span class="built_in">require</span>(<span class="string">"child_process"</span>);</div><div class="line"><span class="keyword">var</span> child = child_process.spawn(<span class="string">"./test.sh"</span>);</div><div class="line"></div><div class="line"><span class="comment">// hello</span></div><div class="line">child.stdout.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">   <span class="built_in">console</span>.log(chunk.toString());</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 如果test.sh没有可执行权限，则会报EACCESS错误</span></div><div class="line">child.stderr.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.error(chunk.toString());</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
 <ul>
-<li>child_process.fork(modulePath[, args][, options])</li>
+<li>fork(modulePath[, args][, options])</li>
 </ul>
 <p>fork一个有Node.js特色的建立子进程的方式，它允许指定一个js文件作为启动代码在Node.js环境下执行，这是spawn方法的特殊应用场景，子进程将与父进程建立IPC通道用于进程通讯，而fork方法返回的子进程对象的stdio将不会被赋值，父进程与子进程将以IPC通道进行通讯。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// test.js</span></div><div class="line"><span class="keyword">var</span> child_process = <span class="built_in">require</span>(<span class="string">"child_process"</span>);</div><div class="line"><span class="keyword">var</span> child = child_process.fork(<span class="string">"./child.js"</span>);</div><div class="line"></div><div class="line">child.on(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">message</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"message: %s"</span>, message);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
@@ -574,6 +572,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/archivers/2017/02/node-http-client/" rel="prev" title="Node.js - http模块客户端篇">
+                Node.js - http模块客户端篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -666,7 +668,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archivers">
-              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-count">9</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -683,7 +685,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">18</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -766,7 +768,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

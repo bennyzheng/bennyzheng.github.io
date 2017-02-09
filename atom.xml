@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://bennyzheng.github.io/"/>
-  <updated>2016-12-13T09:18:04.000Z</updated>
+  <updated>2017-02-09T09:37:18.000Z</updated>
   <id>https://bennyzheng.github.io/</id>
   
   <author>
@@ -16,11 +16,103 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Node.js - http模块客户端篇</title>
+    <link href="https://bennyzheng.github.io/archivers/2017/02/node-http-client/"/>
+    <id>https://bennyzheng.github.io/archivers/2017/02/node-http-client/</id>
+    <published>2017-02-09T09:37:18.000Z</published>
+    <updated>2017-02-09T09:37:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>过年休息了一阵子，似乎吃胖了一圈，想想该继续研究Node.js的东西了。<br>http模块涉及到的知识特别丰富，Node.js提供的API主要分成两大块，一部份是客户端发请求，另一部份是服务器端的http服务。涉及到的模块也较多，比如net模块、dns模块等等。</p>
+<h1 id="发送请求"><a href="#发送请求" class="headerlink" title="发送请求"></a>发送请求</h1><p>作为客户端，发起一个请求是最基本的操作。http模块提供了两个函数用于发起请求，包括了get函数以及request函数，get函数是对request函数的一个封装，它所有的功能都可以使用request函数实现，get函数存在的意义就是让使用者最方便地发起一个get请求，毕竟get请求是最常见的。<br><a id="more"></a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</div><div class="line"></div><div class="line">http.get(<span class="string">"http://test.dev.com/index.php"</span>,<span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> str = <span class="string">""</span>;</div><div class="line"></div><div class="line">    res.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">        str += chunk.toString(<span class="string">"utf-8"</span>);</div><div class="line">    &#125;).on(<span class="string">"end"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(str);</div><div class="line">    &#125;);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>request函数是完整形态的请求方式，提供了大量的参数设置定制请求，它的函数说明是<strong>http.request(options[, callback])</strong>。与get不同，第一个参数是一个对象，并且需要自己解析url填充参数，以下是上一个例子的request写法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</div><div class="line"><span class="keyword">var</span> url = <span class="built_in">require</span>(<span class="string">"url"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> uri = url.parse(<span class="string">"http://test.dev.com/index.php"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> request = http.request(&#123;</div><div class="line">    <span class="attr">method</span>: <span class="string">"get"</span>,</div><div class="line">    <span class="attr">host</span>: uri.host,</div><div class="line">    <span class="attr">path</span>: uri.path</div><div class="line">&#125;, <span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> str = <span class="string">""</span>;</div><div class="line"></div><div class="line">    res.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">        str += chunk.toString(<span class="string">"utf-8"</span>);</div><div class="line">    &#125;).on(<span class="string">"end"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(str);</div><div class="line">    &#125;);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">request.end();</div></pre></td></tr></table></figure>
+<p>要注意的是，get和request都会返回一个ClientRequest对象，get会自动调用该对象的end方法，而request则需要使用者自己调用。</p>
+<h1 id="请求报文头操作"><a href="#请求报文头操作" class="headerlink" title="请求报文头操作"></a>请求报文头操作</h1><p>当发起一个请求，在调用ClientRequest的write方法或者end方法之前都可以操作请求的报文头。get函数会自动调用end方法，但并不是调用get函数之后马上就调用end方法，按手册描述就是报文头已经进入发送队列，但是它依然处于可修改的状态。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// ...</span></div><div class="line"></div><div class="line"><span class="keyword">var</span> request = http.request(&#123;</div><div class="line">    <span class="attr">method</span>: <span class="string">"post"</span>,</div><div class="line">    <span class="attr">host</span>: uri.host,</div><div class="line">    <span class="attr">path</span>: uri.path</div><div class="line">&#125;, <span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">   <span class="comment">// ... </span></div><div class="line">&#125;);</div><div class="line"></div><div class="line">request.setHeader(<span class="string">"Content-Type"</span>, <span class="string">"application/x-www-form-urlencoded"</span>);</div><div class="line">request.write(<span class="string">"name=benny"</span>);</div><div class="line">request.end(<span class="string">"name=benny"</span>);</div></pre></td></tr></table></figure>
+<p>request函数除了可以在option设置headers属性之外，它返回的HttpClient也提供了几个API供使用者操作header，其中包括：</p>
+<ul>
+<li>headersSent - 检测当前是否已经发送报文头，如果为true则无法写报文头</li>
+<li>getHeader - 获取某个报文头的值</li>
+<li>setHeader - 设置某个报文头的值</li>
+<li>removeHeader - 删除某个已经添加的报文头</li>
+<li>flushHeaders - 将缓冲区的报文头发送，当它被调用后就无法写报文头</li>
+<li>addTrailers - 在报文主体后添加报文头</li>
+</ul>
+<p>由于http报文头发送完就开始发送报文主体，当开始发送报文主体之后就不能再发送报文头，但有些情况下报文头的值与报文主体相关，比如某报文头的值是报文主体的内容验证hash值，而报文主体的内容又是动态生成，如果还严格按照先发送报文头再发送报文主体的规定，那么性能、内存消耗可能会很高，因此http1.1允许追加报文头，这种报文头就是trailer。</p>
+<p>添加trailer的方法是先设置Transfer-Encoding为chunked以及指定追加报文头的名字Trailer，最后再加追报文头。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// ...</span></div><div class="line"></div><div class="line"><span class="keyword">var</span> request = http.request(&#123;</div><div class="line">    <span class="attr">method</span>: <span class="string">"post"</span>,</div><div class="line">    <span class="attr">host</span>: uri.host,</div><div class="line">    <span class="attr">path</span>: uri.path,</div><div class="line">    <span class="attr">headers</span>: &#123;</div><div class="line">        <span class="string">"Content-Type"</span>: <span class="string">"application/x-www-form-urlencoded"</span>,</div><div class="line">        <span class="string">"Transfer-Encoding"</span>: <span class="string">"chunked"</span>,</div><div class="line">        <span class="string">"Trailer"</span>: <span class="string">"Content-Hash"</span></div><div class="line">    &#125;</div><div class="line">&#125;, <span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="comment">// ... </span></div><div class="line">&#125;);</div><div class="line"></div><div class="line">request.write(<span class="string">"name=benny"</span>);</div><div class="line">request.addTrailers(&#123; <span class="string">"Content-Hash"</span>: <span class="built_in">encodeURIComponent</span>(<span class="string">"这是主体内容的hash值"</span>)&#125;);</div><div class="line">request.end();</div></pre></td></tr></table></figure>
+<h1 id="请求报文主体操作"><a href="#请求报文主体操作" class="headerlink" title="请求报文主体操作"></a>请求报文主体操作</h1><p>get方式的请求不需要报文主体，而post之类的请求则需要报文主体，最常见的报文主体是application/x-www-form-urlencoded类型，内容格式就相当于URL上的查询字符串（比如：a=1&amp;b=2）。请求发送报文主体需要同时设置报文主体的格式，比如上一个例子需要将请求报文头Content-Type的值设置为application/x-www-form-urlencoded。</p>
+<p>一般来说常用的格式除了application/x-www-form-urlencoded之外还有multipart/form-data，这是用于上传文件之用的格式。</p>
+<p>ClientRequest是一个stream，因此可以使用write方法写入报文主体，或者在调用end方法时也可以最后一次写入报文主体。</p>
+<p>ClientRequest涉及到请求报文主体的API有以下几个：</p>
+<ul>
+<li>write - 追加报文主体内容</li>
+<li>end - 最后一次追加报文主体（可选）并关闭写入流</li>
+<li>flush - 将缓冲区的报文主体内容清空并发送</li>
+</ul>
+<h1 id="请求超时与中断处理"><a href="#请求超时与中断处理" class="headerlink" title="请求超时与中断处理"></a>请求超时与中断处理</h1><p>网上许多文章使用了setTimeout来做超时，Node.js在v0.5.9时为ClientRequest新增加了一个setTimeout方法，它能够指定请求发起后多久如果响应数据还没接收完成则调用回调函数告诉使用者时间已经到了，使用者可以在setTimeout方法中做超时处理，比如调用ClientRequest的abort方法中断请求。</p>
+<p>以下是php代码，它请在接收到请求后先睡眠3秒再发送数据：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">sleep(<span class="number">5</span>);</div><div class="line">header(<span class="string">"Content-Type: text/html; charset=UTF-8"</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'done'</span>;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
+<p>以下代码定义了1秒超时：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> request = http.get(<span class="string">"http://test.dev.com/index.php"</span>,<span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> str = <span class="string">""</span>;</div><div class="line"></div><div class="line">    res.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">        str += chunk.toString(<span class="string">"utf-8"</span>);</div><div class="line">    &#125;).on(<span class="string">"end"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(str);</div><div class="line">    &#125;);</div><div class="line">&#125;).setTimeout(<span class="number">1000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"已经超时"</span>);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>运行结果是请求发起后1秒控制台输出了”已经超时”，到了第3秒再输出”done”。也就是说这里的setTimeout仅仅是告诉使用者时间到了，除此之外并不做任何事情，是否中断请求或者做其它事由使用者自己决定。</p>
+<p>把代码简单改一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> request = http.get(<span class="string">"http://test.dev.com/index.php"</span>,<span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="comment">// ... </span></div><div class="line">&#125;).setTimeout(<span class="number">1000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    request.abort();</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"已经超时"</span>);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>运行结果将会是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">已经超时</div><div class="line">events.js:160</div><div class="line">      throw er; // Unhandled &apos;error&apos; event</div><div class="line">      ^</div><div class="line"></div><div class="line">Error: socket hang up</div><div class="line">    at createHangUpError (_http_client.js:253:15)</div><div class="line">    at Socket.socketCloseListener (_http_client.js:285:23)</div><div class="line">    at emitOne (events.js:101:20)</div><div class="line">    at Socket.emit (events.js:188:7)</div><div class="line">    at TCP._handle.close [as _onclose] (net.js:501:12)</div></pre></td></tr></table></figure>
+<p>非常奇怪，报错了！这里意思是说socket被中断了，可以用error事件接住：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> request = http.get(<span class="string">"http://test.dev.com/index.php"</span>,<span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="comment">// ... </span></div><div class="line">&#125;).setTimeout(<span class="number">1000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    request.abort();</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"已经超时"</span>);</div><div class="line">&#125;).on(<span class="string">"error"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"报错了"</span>);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>运行结果会在一秒后输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">已经超时</div><div class="line">报错了</div></pre></td></tr></table></figure>
+<p>这种现象比较奇怪，中断请求是使用者自己中断的，怎么会抛出异常？个人表示不解，但事实就是如此。ClientRequest有个事件叫abort，它会在客户端中断请求时触发，把代码改一下看看如果监听了该事件是否就不报异常：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> request = http.get(<span class="string">"http://test.dev.com/index.php"</span>,<span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="comment">// ... </span></div><div class="line">&#125;).setTimeout(<span class="number">1000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    request.abort();</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"已经超时"</span>);</div><div class="line">&#125;).on(<span class="string">"abort"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"中断请求了"</span>);</div><div class="line">&#125;).on(<span class="string">"error"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"报错了"</span>);</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>结果是： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">已经超时</div><div class="line">中断请求了</div><div class="line">报错了</div></pre></td></tr></table></figure>
+<p>经过多次试验，我还发现并不是每次都会抛出异常，现在把服务器端的代码改一下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">header(<span class="string">"Content-Type: text/html; charset=UTF-8"</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'hello'</span>;</div><div class="line">flush();</div><div class="line">sleep(<span class="number">3</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'done'</span>;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
+<p>这段代码会先输出’hello’，然后马上清空缓冲区将报文头和’hello’发送到客户端，接着进入睡眠，3秒后再输出’done’，运行结果将是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">已经超时</div><div class="line">中断请求了</div></pre></td></tr></table></figure>
+<p>也就是说如果已经开始接收到服务器端的响应数据再调用abort方法中断请求将不会触发”socket hang up”，但不管如何这个异常都必须被处理。<br>经过我的试验，基本上可以总结为以下两条规则：</p>
+<ul>
+<li>如果服务器尚未输出数据到客户端时中断请求，ClientRequest将触发abort事件并抛出”socket hang up”异常，该异常可以使用error事件接住，这个过程不会调用请求发起时传入的响应回调函数。</li>
+<li>如果服务器已经开始输出数据到客户端时中断请求，ClientRequest将触发abort事件但不会抛出异常，这时候响应回调函数已经被调用，IncomingMessage对象将触发aborted事件，然后再触发end事件。</li>
+</ul>
+<p>第二条规则试验代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">header(<span class="string">"Content-Type: text/html; charset=UTF-8"</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'hello'</span>;</div><div class="line">flush();</div><div class="line">sleep(<span class="number">3</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'done'</span>;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> request = http.get(<span class="string">"http://test.dev.com/index.php"</span>,<span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> str = <span class="string">""</span>;</div><div class="line"></div><div class="line">    res.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">        str += chunk.toString(<span class="string">"utf-8"</span>);</div><div class="line">    &#125;).on(<span class="string">"aborted"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"响应中断"</span>);</div><div class="line">        str = <span class="string">""</span>; <span class="comment">// 抛弃结果</span></div><div class="line">    &#125;).on(<span class="string">"end"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"响应结束"</span>);</div><div class="line">    &#125;);</div><div class="line">&#125;).setTimeout(<span class="number">1000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    request.abort();</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"已经超时"</span>);</div><div class="line">&#125;).on(<span class="string">"abort"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"中断请求了"</span>);</div><div class="line">&#125;).on(<span class="string">"error1"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"报错了"</span>);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>输出结果是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">已经超时</div><div class="line">中断请求了</div><div class="line">响应中断</div><div class="line">响应结束</div></pre></td></tr></table></figure>
+<h1 id="还没完，待续"><a href="#还没完，待续" class="headerlink" title="还没完，待续"></a>还没完，待续</h1>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;过年休息了一阵子，似乎吃胖了一圈，想想该继续研究Node.js的东西了。&lt;br&gt;http模块涉及到的知识特别丰富，Node.js提供的API主要分成两大块，一部份是客户端发请求，另一部份是服务器端的http服务。涉及到的模块也较多，比如net模块、dns模块等等。&lt;/p&gt;
+&lt;h1 id=&quot;发送请求&quot;&gt;&lt;a href=&quot;#发送请求&quot; class=&quot;headerlink&quot; title=&quot;发送请求&quot;&gt;&lt;/a&gt;发送请求&lt;/h1&gt;&lt;p&gt;作为客户端，发起一个请求是最基本的操作。http模块提供了两个函数用于发起请求，包括了get函数以及request函数，get函数是对request函数的一个封装，它所有的功能都可以使用request函数实现，get函数存在的意义就是让使用者最方便地发起一个get请求，毕竟get请求是最常见的。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Node.js学习笔记" scheme="https://bennyzheng.github.io/categories/Node-js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
+    
+      <category term="http" scheme="https://bennyzheng.github.io/tags/http/"/>
+    
+      <category term="request" scheme="https://bennyzheng.github.io/tags/request/"/>
+    
+      <category term="client" scheme="https://bennyzheng.github.io/tags/client/"/>
+    
+      <category term="Agent" scheme="https://bennyzheng.github.io/tags/Agent/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Node.js - 进程学习笔记</title>
     <link href="https://bennyzheng.github.io/archivers/2016/12/node-process/"/>
     <id>https://bennyzheng.github.io/archivers/2016/12/node-process/</id>
-    <published>2016-12-13T09:18:04.000Z</published>
-    <updated>2016-12-13T09:18:04.000Z</updated>
+    <published>2016-12-14T06:57:49.000Z</published>
+    <updated>2016-12-16T06:49:28.000Z</updated>
     
     <content type="html"><![CDATA[<p>我一直都是在浏览器端工作，算是个很普通的Web前端开发工程师，对于进程、线程方面的知识仅限于知识广度需要初步理解，但并没有真正去使用它。</p>
 <p>使用Javascript写应用程序的例子不少，在Windows下可以用Javascript调用系统COM组件读写文件甚至写病毒；在ASP大家默认使用VBScript编写代码，同时也可以使用Javascript。Node.js是做得最好的一个，它让Javascript的世界变得更加丰富多彩，它是专门为Javascript搭建的舞台。</p>
@@ -54,8 +146,6 @@
 <h1 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h1><p>Node.js环境下的应用程序在默认情况下如果发生错误将会马上报错并且退出程序，一般来说可以通过try-catch来捕获错误:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;, <span class="number">5000</span>);</div><div class="line"></div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">"my error"</span>);</div><div class="line">&#125;<span class="keyword">catch</span>(ex) &#123;</div><div class="line">    <span class="built_in">console</span>.log(ex.message);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>try-catch会将异常捕获，并且把ex当参数传给catch代码块，可以在里边做异常处理。当然，如果有需要，在catch代码块中对异常做完处理之后也可以再使用throw抛出错误。</p>
-<p>try-catch对性能是相当有影响的，使用时需要将它放到一个尽可能小的作用域下以减少这种影响：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> value = <span class="number">0</span>;</div><div class="line">    <span class="keyword">var</span> obj = &#123;&#125;;</div><div class="line">    <span class="built_in">console</span>.time(<span class="string">"test"</span>);</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; time; i++) &#123;</div><div class="line">        value = i % <span class="number">2</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    (<span class="function"><span class="keyword">function</span>(<span class="params">value</span>) </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            obj.value = value;</div><div class="line">        &#125; <span class="keyword">catch</span>(ex)&#123;&#125;</div><div class="line">    &#125;)(value, obj);</div><div class="line"></div><div class="line">    <span class="built_in">console</span>.timeEnd(<span class="string">"test"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>除了try-catch，进程对象还提供了uncaughtException事件用于捕获未使用try-catch捕获的异常并对其做统一处理：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;, <span class="number">5000</span>);</div><div class="line"></div><div class="line">process.on(<span class="string">"uncaughtException"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">ev</span>) </span>&#123;</div><div class="line">   <span class="built_in">console</span>.error(<span class="string">'报错了'</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">"error"</span>);</div></pre></td></tr></table></figure>
 <p>除了uncaughtException还有另一个事件unhandledRejection也极其类似，它与uncaughtException不同的是uncaughtException用于捕获同步代码抛出的异常，而unhandledRejection用于捕获Promise代码中的异常。</p>
@@ -121,7 +211,7 @@
 <p>spawn默认不会新建shell，但你可以将options的shell选项设置为true或者设置为某个shell的地址启用shell，在这方面算是比较自由。但这并不是spawn与exec区别最大的地方，exec/execFile会将命令执行完再将stdout/stderr的内容当成参数传递给回调函数，它们能够传递的内容比较有限，在没更改options的设置值的情况下是200KB的缓冲区，如果产生的内容超出200KB则会报错。spawn则可以通过stdout/stderr流来获取数据，比如调用curl下载远程文件并保存内容。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> child_process = <span class="built_in">require</span>(<span class="string">"child_process"</span>);</div><div class="line"><span class="keyword">var</span> child = child_process.spawn(<span class="string">"./test.sh"</span>);</div><div class="line"></div><div class="line"><span class="comment">// hello</span></div><div class="line">child.stdout.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">   <span class="built_in">console</span>.log(chunk.toString());</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 如果test.sh没有可执行权限，则会报EACCESS错误</span></div><div class="line">child.stderr.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.error(chunk.toString());</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
 <ul>
-<li>child_process.fork(modulePath[, args][, options])</li>
+<li>fork(modulePath[, args][, options])</li>
 </ul>
 <p>fork一个有Node.js特色的建立子进程的方式，它允许指定一个js文件作为启动代码在Node.js环境下执行，这是spawn方法的特殊应用场景，子进程将与父进程建立IPC通道用于进程通讯，而fork方法返回的子进程对象的stdio将不会被赋值，父进程与子进程将以IPC通道进行通讯。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// test.js</span></div><div class="line"><span class="keyword">var</span> child_process = <span class="built_in">require</span>(<span class="string">"child_process"</span>);</div><div class="line"><span class="keyword">var</span> child = child_process.fork(<span class="string">"./child.js"</span>);</div><div class="line"></div><div class="line">child.on(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">message</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"message: %s"</span>, message);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
@@ -640,13 +730,13 @@
       <category term="javascript" scheme="https://bennyzheng.github.io/categories/javascript/"/>
     
     
-      <category term="TypeArray" scheme="https://bennyzheng.github.io/tags/TypeArray/"/>
-    
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="ArrayBuffer" scheme="https://bennyzheng.github.io/tags/ArrayBuffer/"/>
-    
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
+    
+      <category term="TypeArray" scheme="https://bennyzheng.github.io/tags/TypeArray/"/>
+    
+      <category term="ArrayBuffer" scheme="https://bennyzheng.github.io/tags/ArrayBuffer/"/>
     
   </entry>
   
@@ -710,9 +800,9 @@
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
-    
       <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
+    
+      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
     
   </entry>
   
@@ -810,9 +900,9 @@
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
-    
       <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
+    
+      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
     
   </entry>
   
@@ -979,9 +1069,9 @@
     
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
-      <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
-    
       <category term="Stream" scheme="https://bennyzheng.github.io/tags/Stream/"/>
+    
+      <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
     
   </entry>
   
