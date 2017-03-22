@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://bennyzheng.github.io/"/>
-  <updated>2017-02-09T10:55:56.000Z</updated>
+  <updated>2017-03-22T13:34:45.000Z</updated>
   <id>https://bennyzheng.github.io/</id>
   
   <author>
@@ -19,11 +19,11 @@
     <title>Node.js - http模块客户端篇</title>
     <link href="https://bennyzheng.github.io/archivers/2017/02/node-http-client/"/>
     <id>https://bennyzheng.github.io/archivers/2017/02/node-http-client/</id>
-    <published>2017-02-09T10:55:56.000Z</published>
-    <updated>2017-02-09T10:55:56.000Z</updated>
+    <published>2017-03-22T13:34:45.000Z</published>
+    <updated>2017-03-22T13:34:45.000Z</updated>
     
     <content type="html"><![CDATA[<p>过年休息了一阵子，似乎吃胖了一圈，想想该继续研究Node.js的东西了。<br>http模块涉及到的知识特别丰富，Node.js提供的API主要分成两大块，一部份是客户端发请求，另一部份是服务器端的http服务。涉及到的模块也较多，比如net模块、dns模块等等。</p>
-<h1 id="发送请求"><a href="#发送请求" class="headerlink" title="发送请求"></a>发送请求</h1><p>作为客户端，发起一个请求是最基本的操作。http模块提供了两个函数用于发起请求，包括了get函数以及request函数，get函数是对request函数的一个封装，它所有的功能都可以使用request函数实现，get函数存在的意义就是让使用者最方便地发起一个get请求，毕竟get请求是最常见的。<br><a id="more"></a></p>
+<h1 id="发送请求"><a href="#发送请求" class="headerlink" title="发送请求"></a>发送请求</h1><p>作为客户端，发起一个请求是最基本的操作。http模块提供了两个函数用于发起请求，包括了get函数以及request函数，get函数是对request函数的一个封装，它所有的功能都可以使用request函数实现，get函数存在的意义就是让使用者更方便地发起一个get请求，毕竟get请求是最常见的。<br><a id="more"></a></p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</div><div class="line"></div><div class="line">http.get(<span class="string">"http://test.dev.com/index.php"</span>,<span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> str = <span class="string">""</span>;</div><div class="line"></div><div class="line">    res.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">        str += chunk.toString(<span class="string">"utf-8"</span>);</div><div class="line">    &#125;).on(<span class="string">"end"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(str);</div><div class="line">    &#125;);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
 <p>request函数是完整形态的请求方式，提供了大量的参数设置定制请求，它的函数说明是<strong>http.request(options[, callback])</strong>。与get不同，第一个参数是一个对象，并且需要自己解析url填充参数，以下是上一个例子的request写法：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</div><div class="line"><span class="keyword">var</span> url = <span class="built_in">require</span>(<span class="string">"url"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> uri = url.parse(<span class="string">"http://test.dev.com/index.php"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> request = http.request(&#123;</div><div class="line">    <span class="attr">method</span>: <span class="string">"get"</span>,</div><div class="line">    <span class="attr">host</span>: uri.host,</div><div class="line">    <span class="attr">path</span>: uri.path</div><div class="line">&#125;, <span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> str = <span class="string">""</span>;</div><div class="line"></div><div class="line">    res.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">        str += chunk.toString(<span class="string">"utf-8"</span>);</div><div class="line">    &#125;).on(<span class="string">"end"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(str);</div><div class="line">    &#125;);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">request.end();</div></pre></td></tr></table></figure>
@@ -52,7 +52,7 @@
 <li>flush - 将缓冲区的报文主体内容清空并发送</li>
 </ul>
 <h1 id="请求超时与中断处理"><a href="#请求超时与中断处理" class="headerlink" title="请求超时与中断处理"></a>请求超时与中断处理</h1><p>网上许多文章使用了setTimeout来做超时，Node.js在v0.5.9时为ClientRequest新增加了一个setTimeout方法，它能够指定请求发起后多久如果响应数据还没接收完成则调用回调函数告诉使用者时间已经到了，使用者可以在setTimeout方法中做超时处理，比如调用ClientRequest的abort方法中断请求。另外，ClientRequest提供了clearTimeout方法用于取消计时器。</p>
-<p>以下是php代码，它请在接收到请求后先睡眠3秒再发送数据：</p>
+<p>以下是php代码，它将在接收到请求后先睡眠3秒再发送数据：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">sleep(<span class="number">5</span>);</div><div class="line">header(<span class="string">"Content-Type: text/html; charset=UTF-8"</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'done'</span>;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
 <p>以下代码定义了1秒超时：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> request = http.get(<span class="string">"http://test.dev.com/index.php"</span>,<span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> str = <span class="string">""</span>;</div><div class="line"></div><div class="line">    res.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">        str += chunk.toString(<span class="string">"utf-8"</span>);</div><div class="line">    &#125;).on(<span class="string">"end"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(str);</div><div class="line">    &#125;);</div><div class="line">&#125;).setTimeout(<span class="number">1000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"已经超时"</span>);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
@@ -70,7 +70,7 @@
 <p>结果是： </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">已经超时</div><div class="line">中断请求了</div><div class="line">报错了</div></pre></td></tr></table></figure>
 <p>经过多次试验，我还发现并不是每次都会抛出异常，现在把服务器端的代码改一下：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">header(<span class="string">"Content-Type: text/html; charset=UTF-8"</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'hello'</span>;</div><div class="line">flush();</div><div class="line">sleep(<span class="number">3</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'done'</span>;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">ob_end_clean();</div><div class="line">header(<span class="string">"Content-Type: text/html; charset=UTF-8"</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'hello'</span>;</div><div class="line">flush();</div><div class="line">sleep(<span class="number">3</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'done'</span>;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
 <p>这段代码会先输出’hello’，然后马上清空缓冲区将报文头和’hello’发送到客户端，接着进入睡眠，3秒后再输出’done’，运行结果将是：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">已经超时</div><div class="line">中断请求了</div></pre></td></tr></table></figure>
 <p>也就是说如果已经开始接收到服务器端的响应数据再调用abort方法中断请求将不会触发”socket hang up”，但不管如何这个异常都必须被处理。<br>经过我的试验，基本上可以总结为以下两条规则：</p>
@@ -79,7 +79,7 @@
 <li>如果服务器已经开始输出数据到客户端时中断请求，ClientRequest将触发abort事件但不会抛出异常，这时候响应回调函数已经被调用，IncomingMessage对象将触发aborted事件，然后再触发end事件，最后触发close事件。</li>
 </ul>
 <p>第二条规则试验代码如下：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">header(<span class="string">"Content-Type: text/html; charset=UTF-8"</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'hello'</span>;</div><div class="line">flush();</div><div class="line">sleep(<span class="number">3</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'done'</span>;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">ob_end_clean();</div><div class="line">header(<span class="string">"Content-Type: text/html; charset=UTF-8"</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'hello'</span>;</div><div class="line">flush();</div><div class="line">sleep(<span class="number">3</span>);</div><div class="line"><span class="keyword">echo</span> <span class="string">'done'</span>;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> request = http.get(<span class="string">"http://test.dev.com/index.php"</span>,<span class="function"><span class="keyword">function</span>(<span class="params">res</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> str = <span class="string">""</span>;</div><div class="line"></div><div class="line">    res.on(<span class="string">"data"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">        str += chunk.toString(<span class="string">"utf-8"</span>);</div><div class="line">    &#125;).on(<span class="string">"aborted"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"响应中断"</span>);</div><div class="line">        str = <span class="string">""</span>; <span class="comment">// 抛弃结果</span></div><div class="line">    &#125;).on(<span class="string">"close"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"连接关闭"</span>)</div><div class="line">    &#125;).on(<span class="string">"end"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">"响应结束"</span>);</div><div class="line">    &#125;);</div><div class="line">&#125;).setTimeout(<span class="number">1000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    request.abort();</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"已经超时"</span>);</div><div class="line">&#125;).on(<span class="string">"abort"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"中断请求了"</span>);</div><div class="line">&#125;).on(<span class="string">"error"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">"报错了"</span>);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
 <p>输出结果是：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">已经超时</div><div class="line">中断请求了</div><div class="line">响应中断</div><div class="line">响应结束</div><div class="line">连接关闭</div></pre></td></tr></table></figure>
@@ -105,12 +105,12 @@
 <li>statusCode - 响应状态码，比如200</li>
 <li>statusMessage - 响应描述，比如OK</li>
 </ul>
-<h1 id="未完成，待续"><a href="#未完成，待续" class="headerlink" title="未完成，待续"></a>未完成，待续</h1>]]></content>
+]]></content>
     
     <summary type="html">
     
       &lt;p&gt;过年休息了一阵子，似乎吃胖了一圈，想想该继续研究Node.js的东西了。&lt;br&gt;http模块涉及到的知识特别丰富，Node.js提供的API主要分成两大块，一部份是客户端发请求，另一部份是服务器端的http服务。涉及到的模块也较多，比如net模块、dns模块等等。&lt;/p&gt;
-&lt;h1 id=&quot;发送请求&quot;&gt;&lt;a href=&quot;#发送请求&quot; class=&quot;headerlink&quot; title=&quot;发送请求&quot;&gt;&lt;/a&gt;发送请求&lt;/h1&gt;&lt;p&gt;作为客户端，发起一个请求是最基本的操作。http模块提供了两个函数用于发起请求，包括了get函数以及request函数，get函数是对request函数的一个封装，它所有的功能都可以使用request函数实现，get函数存在的意义就是让使用者最方便地发起一个get请求，毕竟get请求是最常见的。&lt;br&gt;
+&lt;h1 id=&quot;发送请求&quot;&gt;&lt;a href=&quot;#发送请求&quot; class=&quot;headerlink&quot; title=&quot;发送请求&quot;&gt;&lt;/a&gt;发送请求&lt;/h1&gt;&lt;p&gt;作为客户端，发起一个请求是最基本的操作。http模块提供了两个函数用于发起请求，包括了get函数以及request函数，get函数是对request函数的一个封装，它所有的功能都可以使用request函数实现，get函数存在的意义就是让使用者更方便地发起一个get请求，毕竟get请求是最常见的。&lt;br&gt;
     
     </summary>
     
@@ -822,9 +822,9 @@
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
-    
       <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
+    
+      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
     
   </entry>
   
@@ -922,9 +922,9 @@
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
-    
       <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
+    
+      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
     
   </entry>
   
@@ -1091,9 +1091,9 @@
     
       <category term="Binary" scheme="https://bennyzheng.github.io/tags/Binary/"/>
     
-      <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
-    
       <category term="Stream" scheme="https://bennyzheng.github.io/tags/Stream/"/>
+    
+      <category term="Buffer" scheme="https://bennyzheng.github.io/tags/Buffer/"/>
     
   </entry>
   
