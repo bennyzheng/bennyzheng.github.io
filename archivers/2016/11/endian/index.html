@@ -93,13 +93,13 @@
 <meta property="og:url" content="https://bennyzheng.github.io/archivers/2016/11/endian/index.html">
 <meta property="og:site_name" content="思考与记录">
 <meta property="og:description" content="现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。">
-<meta property="og:image" content="https://bennyzheng.github.io/images/2016/endian-1.png">
-<meta property="og:image" content="https://bennyzheng.github.io/images/2016/endian-2.png">
-<meta property="og:updated_time" content="2016-12-13T03:33:52.000Z">
+<meta property="og:image" content="https://bennyzheng.github.io/media/14906290053960/endian-1.png">
+<meta property="og:image" content="https://bennyzheng.github.io/media/14906290053960/endian-2.png">
+<meta property="og:updated_time" content="2017-03-27T16:03:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据存储方式 - endian">
 <meta name="twitter:description" content="现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。">
-<meta name="twitter:image" content="https://bennyzheng.github.io/images/2016/endian-1.png">
+<meta name="twitter:image" content="https://bennyzheng.github.io/media/14906290053960/endian-1.png">
 
 
 
@@ -282,7 +282,7 @@
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="benny zheng">
     <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/face.png">
+    <meta itemprop="image" content="/media/face.png">
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -379,10 +379,10 @@
 <p>1111 1111<br>F    F</p>
 <p>也就是范围用16进制表示是0x00至0xff，我们后边就用两个16进制的字符来表示一个字节的值。</p>
 <p>网上有篇文章讲解endian，使用了0x12345678作为例子，我觉得非常好，事实上我也是参考了那篇文章，并把自己的理解写在这。这个数字是8个16进制字符，按2个字符1个字节算其实它就是一个32位的无符号整型，即4个字节，按照我们的书写习惯它应该是这么写的：</p>
-<p><img src="/images/2016/endian-1.png" alt="big-endian"></p>
+<p><img src="/media/14906290053960/endian-1.png" alt="endian-1"></p>
 <p>这种写法被称为big-endian，它的存储原则是高位优先，从高位字节到低位字节按顺序写到相邻的四个字节中，PowerPC采用的正是这种方式。</p>
 <p>Intel采用是little-endian，它的存储原则是低位优先，从低位字节到高拉字节按顺序写到相邻的四个字节中，也就是big-endian反过来：</p>
-<p><img src="/images/2016/endian-2.png" alt="little-endian"></p>
+<p><img src="/media/14906290053960/endian-2.png" alt="endian-2"></p>
 <p>二者到底有什么优缺点呢？</p>
 <ul>
 <li>big-endian相对来说更符合人类阅读习惯</li>
@@ -523,7 +523,7 @@
       <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
-               src="/images/face.png"
+               src="/media/face.png"
                alt="benny zheng" />
           <p class="site-author-name" itemprop="name">benny zheng</p>
           <p class="site-description motion-element" itemprop="description">一名前端开发工程师，曾在新浪中国以及YY语音写过几年代码，现在在深圳泰久继续写代码。</p>
