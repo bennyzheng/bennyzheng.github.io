@@ -429,11 +429,11 @@
       <category term="Node.js学习笔记" scheme="https://bennyzheng.github.io/categories/Node-js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
-    
       <category term="process" scheme="https://bennyzheng.github.io/tags/process/"/>
     
       <category term="child_process" scheme="https://bennyzheng.github.io/tags/child-process/"/>
+    
+      <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
   </entry>
   
@@ -887,9 +887,9 @@
       <category term="javascript" scheme="https://bennyzheng.github.io/categories/javascript/"/>
     
     
-      <category term="TypeArray" scheme="https://bennyzheng.github.io/tags/TypeArray/"/>
-    
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
+    
+      <category term="TypeArray" scheme="https://bennyzheng.github.io/tags/TypeArray/"/>
     
       <category term="ArrayBuffer" scheme="https://bennyzheng.github.io/tags/ArrayBuffer/"/>
     
@@ -958,9 +958,9 @@
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
-    
       <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
+    
+      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
     
   </entry>
   
@@ -1059,9 +1059,9 @@
     
       <category term="Node.js" scheme="https://bennyzheng.github.io/tags/Node-js/"/>
     
-      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
-    
       <category term="URL" scheme="https://bennyzheng.github.io/tags/URL/"/>
+    
+      <category term="Path" scheme="https://bennyzheng.github.io/tags/Path/"/>
     
   </entry>
   
