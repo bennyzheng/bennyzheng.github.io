@@ -95,7 +95,7 @@
 <meta property="og:description" content="现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。">
 <meta property="og:image" content="https://bennyzheng.github.io/media/14906290053960/endian-1.png">
 <meta property="og:image" content="https://bennyzheng.github.io/media/14906290053960/endian-2.png">
-<meta property="og:updated_time" content="2017-03-27T16:03:44.000Z">
+<meta property="og:updated_time" content="2017-04-02T03:22:09.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据存储方式 - endian">
 <meta name="twitter:description" content="现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。">
@@ -375,7 +375,9 @@
       
 
       
-        <p>现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。<br><a id="more"></a><br>数据在内存中是以二进制方式存储的，一个字节可以存储一个8位的整型，有符号整型可以存储-128至127，而无符号整型可以存储0-255。无符号整型255写成二进制以及十六进制形式是：</p>
+        <p>现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。</p>
+<a id="more"></a>
+<p>数据在内存中是以二进制方式存储的，一个字节可以存储一个8位的整型，有符号整型可以存储-128至127，而无符号整型可以存储0-255。无符号整型255写成二进制以及十六进制形式是：</p>
 <p>1111 1111<br>F    F</p>
 <p>也就是范围用16进制表示是0x00至0xff，我们后边就用两个16进制的字符来表示一个字节的值。</p>
 <p>网上有篇文章讲解endian，使用了0x12345678作为例子，我觉得非常好，事实上我也是参考了那篇文章，并把自己的理解写在这。这个数字是8个16进制字符，按2个字符1个字节算其实它就是一个32位的无符号整型，即4个字节，按照我们的书写习惯它应该是这么写的：</p>
@@ -531,7 +533,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archivers">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">10</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -548,7 +550,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-count">22</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

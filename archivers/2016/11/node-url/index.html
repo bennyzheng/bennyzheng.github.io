@@ -87,17 +87,17 @@
 
 
 
-<meta name="description" content="URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。">
+<meta name="description" content="Node.js - url模块URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Node.js - url模块">
 <meta property="og:url" content="https://bennyzheng.github.io/archivers/2016/11/node-url/index.html">
 <meta property="og:site_name" content="思考与记录">
-<meta property="og:description" content="URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。">
+<meta property="og:description" content="Node.js - url模块URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。">
 <meta property="og:image" content="https://bennyzheng.github.io/media/14906296574526/url.png">
-<meta property="og:updated_time" content="2017-03-27T16:03:19.000Z">
+<meta property="og:updated_time" content="2017-04-02T03:31:59.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Node.js - url模块">
-<meta name="twitter:description" content="URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。">
+<meta name="twitter:description" content="Node.js - url模块URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。">
 <meta name="twitter:image" content="https://bennyzheng.github.io/media/14906296574526/url.png">
 
 
@@ -374,8 +374,9 @@
       
 
       
-        <p>URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。<br><a id="more"></a></p>
-<h1 id="URL的结构"><a href="#URL的结构" class="headerlink" title="URL的结构"></a>URL的结构</h1><p>Node.js手册非常形象的使用了下方这张图片作为解读URL结构的示例，图中很清楚地为我们构造出一个完整的URL应该是长什么样的。</p>
+        <h1 id="Node-js-url模块"><a href="#Node-js-url模块" class="headerlink" title="Node.js - url模块"></a>Node.js - url模块</h1><p>URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。  </p>
+<a id="more"></a>
+<h2 id="URL的结构"><a href="#URL的结构" class="headerlink" title="URL的结构"></a>URL的结构</h2><p>Node.js手册非常形象的使用了下方这张图片作为解读URL结构的示例，图中很清楚地为我们构造出一个完整的URL应该是长什么样的。</p>
 <p><img src="/media/14906296574526/url.png" alt="ur"></p>
 <p>Node.js的url模块能够让工程师将一个URL字符串解析成一个对象，它拥有以下属性：</p>
 <ul>
@@ -394,7 +395,7 @@
 </ul>
 <p>以下是一个完整的URL对象：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> urlObject = &#123;</div><div class="line">    <span class="attr">href</span>: <span class="string">"http://user:pass@host.com:8080/p/a/t/h?query=string#hash"</span>,</div><div class="line">    <span class="attr">protocol</span>: <span class="string">"http:"</span>,</div><div class="line">    <span class="attr">slashes</span>: <span class="literal">true</span>,</div><div class="line">    <span class="attr">auth</span>: <span class="string">'user:pass'</span>,</div><div class="line">    <span class="attr">host</span>: <span class="string">'host.com:8080'</span>,</div><div class="line">    <span class="attr">port</span>: <span class="string">'8080'</span>,</div><div class="line">    <span class="attr">hostname</span>: <span class="string">'host.com'</span>,</div><div class="line">    <span class="attr">hash</span>: <span class="string">'#hash'</span>,</div><div class="line">    <span class="attr">search</span>: <span class="string">'?query=string'</span>,</div><div class="line">    <span class="attr">query</span>: &#123; <span class="attr">query</span>: <span class="string">'string'</span> &#125;, <span class="comment">// 或者 "query=string"</span></div><div class="line">    pathname: <span class="string">'/p/a/t/h'</span>,</div><div class="line">    <span class="attr">path</span>: <span class="string">'/p/a/t/h?query=string'</span>,</div><div class="line">    <span class="attr">href</span>: <span class="string">'http://user:pass@host.com:8080/p/a/t/h?query=string#hash'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h1 id="URL模块API"><a href="#URL模块API" class="headerlink" title="URL模块API"></a>URL模块API</h1><p>URL模块仅提供了3个函数，没有提供类或者其它东西：</p>
+<h2 id="URL模块API"><a href="#URL模块API" class="headerlink" title="URL模块API"></a>URL模块API</h2><p>URL模块仅提供了3个函数，没有提供类或者其它东西：</p>
 <ul>
 <li>url.format - 将一个包含必要字段的urlObject格式化成一个合法的URL字符串。</li>
 <li>url.parse - 将一个合法的URL字符串转成urlObject，注意URL并不需要包含所有的字段，比如”./“也算是一个URL字符串。</li>
@@ -402,12 +403,12 @@
 </ul>
 <p>这三个函数除了url.resolve都比较容易理解，至于resolve，手册给出了相应的例子，也比较形象：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">url.resolve(<span class="string">'/one/two/three'</span>, <span class="string">'four'</span>)         <span class="comment">// '/one/two/four'</span></div><div class="line">url.resolve(<span class="string">'http://example.com/'</span>, <span class="string">'/one'</span>)    <span class="comment">// 'http://example.com/one'</span></div><div class="line">url.resolve(<span class="string">'http://example.com/one'</span>, <span class="string">'/two'</span>) <span class="comment">// 'http://example.com/two'</span></div></pre></td></tr></table></figure>
-<h1 id="小贴士"><a href="#小贴士" class="headerlink" title="小贴士"></a>小贴士</h1><ul>
+<h2 id="小贴士"><a href="#小贴士" class="headerlink" title="小贴士"></a>小贴士</h2><ul>
 <li><p>弄清绝对路径的根目录在哪  </p>
 <p>在构建一个页面时为了方便可能会使用绝对路径，绝对路径是以/开头的路径，对绝对路径不大了解的前端可能会就发现直接在服务器上查看HTML文件时正常，但直接双击打开html文件则发生路径错误。这时需要认清这绝对路径的根目录到底是哪里。  </p>
-<p>假设我们的站点放在/wwwroot/mysite，访问地址是<a href="http://mysite.com，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。" target="_blank" rel="external">http://mysite.com，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。</a>  </p>
-<p>这时候访问<a href="http://mysite.com/index.html，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。" target="_blank" rel="external">http://mysite.com/index.html，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。</a>    </p>
-<p>这是因为在使用域名访问index.html时，绝对路径是指<a href="http://mysite.com/，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。" target="_blank" rel="external">http://mysite.com/，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。</a></p>
+<p>假设我们的站点放在/wwwroot/mysite，访问地址是<a href="http://mysite.com" target="_blank" rel="external">http://mysite.com</a>，现在我们需要访问/index.html，它引用了一个路径为/css/site.css的样式文件，它被存放在/wwwroot/mysite/css/site.css。  </p>
+<p>这时候访问<a href="http://mysite.com/index.html" target="_blank" rel="external">http://mysite.com/index.html</a>，样式能够正常显示，而直接打开/wwwroot/mysite/index.html，则会说找不到/css/site.css。    </p>
+<p>这是因为在使用域名访问index.html时，绝对路径是指<a href="http://mysite.com/" target="_blank" rel="external">http://mysite.com/</a>，映射到磁盘上的地址是/wwwroot/mysite/，而直接打开index.html时，index.html的地址是/wwwroot/mysite/index.html，这时候的绝对路径根目录是/，这时候磁盘上的/css/site.css是不存在的，真正的地址应该是/wwwroot/mysite/css/mysite.css。</p>
 </li>
 <li><p>查询字符串的编码  </p>
 <p>请求一个URL时许多人弄不清哪里需要编码哪里不需要编码，甚至还重复编码，这里特地做一下说明。另外，服务器端接收到你的值是不需要解码的，因为服务器本身就会帮你解码了。</p>
@@ -556,7 +557,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archivers">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">10</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -573,7 +574,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-count">22</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -635,7 +636,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#URL的结构"><span class="nav-number">1.</span> <span class="nav-text">URL的结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#URL模块API"><span class="nav-number">2.</span> <span class="nav-text">URL模块API</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小贴士"><span class="nav-number">3.</span> <span class="nav-text">小贴士</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Node-js-url模块"><span class="nav-number">1.</span> <span class="nav-text">Node.js - url模块</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#URL的结构"><span class="nav-number">1.1.</span> <span class="nav-text">URL的结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URL模块API"><span class="nav-number">1.2.</span> <span class="nav-text">URL模块API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小贴士"><span class="nav-number">1.3.</span> <span class="nav-text">小贴士</span></a></li></ol></li></ol></div>
             
 
           </div>

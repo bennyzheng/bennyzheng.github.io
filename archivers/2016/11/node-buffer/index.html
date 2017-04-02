@@ -93,7 +93,7 @@
 <meta property="og:url" content="https://bennyzheng.github.io/archivers/2016/11/node-buffer/index.html">
 <meta property="og:site_name" content="思考与记录">
 <meta property="og:description" content="刚把Javascript本身新引入的TypeArray以及ArrayBuffer好了解了一下，Node.js针对二进制数据提供了buffer模块，手册中提到Buffer是Int8Array的另一种更适合Node.js使用的实现方式（我看是因为之前TypeArray还没实现结果先出了Buffer，现在准备一条道走到黑吧……不过确实用起来挺好用）。在Node.js的数据交换过程中，buffer模块经常">
-<meta property="og:updated_time" content="2017-03-22T13:54:05.000Z">
+<meta property="og:updated_time" content="2017-04-02T03:25:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Node.js - buffer模块">
 <meta name="twitter:description" content="刚把Javascript本身新引入的TypeArray以及ArrayBuffer好了解了一下，Node.js针对二进制数据提供了buffer模块，手册中提到Buffer是Int8Array的另一种更适合Node.js使用的实现方式（我看是因为之前TypeArray还没实现结果先出了Buffer，现在准备一条道走到黑吧……不过确实用起来挺好用）。在Node.js的数据交换过程中，buffer模块经常">
@@ -372,7 +372,8 @@
       
 
       
-        <p>刚把Javascript本身新引入的TypeArray以及ArrayBuffer好了解了一下，Node.js针对二进制数据提供了buffer模块，手册中提到Buffer是Int8Array的另一种更适合Node.js使用的实现方式（我看是因为之前TypeArray还没实现结果先出了Buffer，现在准备一条道走到黑吧……不过确实用起来挺好用）。在Node.js的数据交换过程中，buffer模块经常会被使用到，比如数据流。<br><a id="more"></a></p>
+        <p>刚把Javascript本身新引入的TypeArray以及ArrayBuffer好了解了一下，Node.js针对二进制数据提供了buffer模块，手册中提到Buffer是Int8Array的另一种更适合Node.js使用的实现方式（我看是因为之前TypeArray还没实现结果先出了Buffer，现在准备一条道走到黑吧……不过确实用起来挺好用）。在Node.js的数据交换过程中，buffer模块经常会被使用到，比如数据流。</p>
+<a id="more"></a>
 <h1 id="Buffer的初始化"><a href="#Buffer的初始化" class="headerlink" title="Buffer的初始化"></a>Buffer的初始化</h1><p>使用buffer模块不需要使用require引入模块，全局提供了一个Buffer对象（可见它使用频率有多频繁）。虽然Buffer可以使用new关键词创建一个实例，但手册上明确表示它已经被弃用，我们应该使用alloc之类的API创建。</p>
 <p>需要特别注意的是：</p>
 <ul>
@@ -602,7 +603,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archivers">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">10</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -619,7 +620,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-count">22</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

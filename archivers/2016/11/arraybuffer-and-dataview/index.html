@@ -93,7 +93,7 @@
 <meta property="og:url" content="https://bennyzheng.github.io/archivers/2016/11/arraybuffer-and-dataview/index.html">
 <meta property="og:site_name" content="思考与记录">
 <meta property="og:description" content="Javascript在数据的处理上一直不是强项，比如数字不分整型和浮点数统一使用了64位浮点数，如果涉及到二进制运算则显得非常无力，在数据传输上也非常浪费带宽。在ES6针对Javascript二进制数据处理上的无力引入了原始缓冲区ArrayBuffer，并且还提供了多种位数的int类型数组以及数据视图来处理数据。">
-<meta property="og:updated_time" content="2017-03-27T15:34:48.000Z">
+<meta property="og:updated_time" content="2017-04-02T03:20:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="缓冲数组以及数据视图">
 <meta name="twitter:description" content="Javascript在数据的处理上一直不是强项，比如数字不分整型和浮点数统一使用了64位浮点数，如果涉及到二进制运算则显得非常无力，在数据传输上也非常浪费带宽。在ES6针对Javascript二进制数据处理上的无力引入了原始缓冲区ArrayBuffer，并且还提供了多种位数的int类型数组以及数据视图来处理数据。">
@@ -372,8 +372,9 @@
       
 
       
-        <p>Javascript在数据的处理上一直不是强项，比如数字不分整型和浮点数统一使用了64位浮点数，如果涉及到二进制运算则显得非常无力，在数据传输上也非常浪费带宽。在ES6针对Javascript二进制数据处理上的无力引入了原始缓冲区ArrayBuffer，并且还提供了多种位数的int类型数组以及数据视图来处理数据。<br><a id="more"></a></p>
-<h1 id="ArrayBuffer"><a href="#ArrayBuffer" class="headerlink" title="ArrayBuffer"></a>ArrayBuffer</h1><p>ArrayBuffer是ES6新引入的用于处理二进制数组的缓冲区对象，它不提供对数据的操作能力，提供的是二进制数据的存储。</p>
+        <p>Javascript在数据的处理上一直不是强项，比如数字不分整型和浮点数统一使用了64位浮点数，如果涉及到二进制运算则显得非常无力，在数据传输上也非常浪费带宽。在ES6针对Javascript二进制数据处理上的无力引入了原始缓冲区ArrayBuffer，并且还提供了多种位数的int类型数组以及数据视图来处理数据。</p>
+<a id="more"></a>
+<h2 id="ArrayBuffer"><a href="#ArrayBuffer" class="headerlink" title="ArrayBuffer"></a>ArrayBuffer</h2><p>ArrayBuffer是ES6新引入的用于处理二进制数组的缓冲区对象，它不提供对数据的操作能力，提供的是二进制数据的存储。</p>
 <p>ArrayBuffer跟Array比较相似，它是一个定长的数组，在初始化后就无法改变长度。每个元素都是一个字节（8bit），相当于C语言中的char，所以如果它的长度是10，就是10字节，绝无例外。</p>
 <p>在这里要特别提一下，我们平时编程所需的所有的数据都可以用不同数量的byte表示，比如32位系统中的int类型长度是4，其实它就是拿4个连续的字节拼凑而成的一段空间。</p>
 <p>ArrayBuffer就是以字节为单位的缓冲区，再配上对应的API（TypeArray or DataView）来做数据的操作。</p>
@@ -388,8 +389,8 @@
 <ul>
 <li>ArrayBuffer.isView(arg) - 如果参数是TypeArray或者DataView，则返回true，否则返回false。</li>
 </ul>
-<h1 id="数据视图"><a href="#数据视图" class="headerlink" title="数据视图"></a>数据视图</h1><p>之前提到过ArrayBuffer仅仅是提供了对数据的存储，相当于动态申请了一段内存（当然你不需要像C/C++一般去释放它，或者在不需要的时候也可以将其设置为null由gc自动释放），对于这段缓冲区的操作则是由一组TypeArray以及灵活度更高的DataView对象来提供。</p>
-<h2 id="TypeArray"><a href="#TypeArray" class="headerlink" title="TypeArray"></a>TypeArray</h2><p>类型数组提供了几种强类型数组对ArrayBuffer中的数据进行读写，其中包括：</p>
+<h2 id="数据视图"><a href="#数据视图" class="headerlink" title="数据视图"></a>数据视图</h2><p>之前提到过ArrayBuffer仅仅是提供了对数据的存储，相当于动态申请了一段内存（当然你不需要像C/C++一般去释放它，或者在不需要的时候也可以将其设置为null由gc自动释放），对于这段缓冲区的操作则是由一组TypeArray以及灵活度更高的DataView对象来提供。</p>
+<h3 id="TypeArray"><a href="#TypeArray" class="headerlink" title="TypeArray"></a>TypeArray</h3><p>类型数组提供了几种强类型数组对ArrayBuffer中的数据进行读写，其中包括：</p>
 <ul>
 <li>Int8Array - 8位的整型数组，由于ArrayBuffer每个元素就是1字节，也就是8位，所以Int8Array的长度就是ArrayBuffer的长度。</li>
 <li>Uint8Array - 8位的无符号整型数组，int8使用了7位来保存数据，1位来当符号位以标识数据的正负，而无符号整型则将8位全部用来保存数据，只能保存非负整数，同样它的长度是ArrayBuffer的长度。</li>
@@ -404,7 +405,7 @@
 <p>吐槽一下：这些类型数组以及ES6新引入的类、TypeScript什么的都感觉像是在打以前吹揍着”脚本语言就应该简单，弱类型是多么的方便”的大神们的脸。</p>
 <p>曾几何时，我还在流着冷汗看着试卷想着int在32位系统上应该是占了几位，long又是占了几位，没想到当了前端还是要面对它们，感谢ECMA。</p>
 <p>类型数组提供的初始化方式、API都是一模一样的，除了元素类型。</p>
-<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>初始化一个TypeArray有多种方法：</p>
+<h4 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h4><p>初始化一个TypeArray有多种方法：</p>
 <ul>
 <li>new TypeArray(length)<br>指明元素个数来创建一个类型数组：</li>
 </ul>
@@ -424,7 +425,7 @@
 </ul>
 <p>要特别注意的是，byteOffset是指从第几个字节算起，而length参数是指TypeArray拥有多少个元素。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> buffer = <span class="keyword">new</span> <span class="built_in">ArrayBuffer</span>(<span class="number">1024</span>);</div><div class="line"><span class="keyword">var</span> int8Array = <span class="keyword">new</span> <span class="built_in">Int8Array</span>(buffer, <span class="number">2</span>, <span class="number">2</span>);</div><div class="line"><span class="keyword">var</span> int16Array = <span class="keyword">new</span> <span class="built_in">Int16Array</span>(buffer, <span class="number">2</span>, <span class="number">2</span>);</div><div class="line"></div><div class="line"><span class="comment">// 2 2</span></div><div class="line"><span class="built_in">console</span>.log(int8Array.length, int8Array.byteLength);</div><div class="line"><span class="comment">// 2 4 由于是int16，所以2个int16占了4个字节</span></div><div class="line"><span class="built_in">console</span>.log(int16Array.length, int16Array.byteLength);</div></pre></td></tr></table></figure>
-<h3 id="静态成员"><a href="#静态成员" class="headerlink" title="静态成员"></a>静态成员</h3><ul>
+<h4 id="静态成员"><a href="#静态成员" class="headerlink" title="静态成员"></a>静态成员</h4><ul>
 <li>TypeArray.BYTES_PER_ELEMENT - 返回该种TypeArray（注意，不要直接写TypeArray，应该是Int8Array之类的对象）每个元素占的字节数。</li>
 <li>TypeArray.from(source[, mapFn[, thisArg]]) - 从一个可遍历的对象(Set、Array、String之类)中创建一个类型数组。<br><em>这里要特别注意当你需要传第三个参数用来给mapFn当this的时候，请不要把mapFn写成箭头函数。</em></li>
 </ul>
@@ -433,7 +434,7 @@
 <li>TypeArray.of(element0[, element1[, …[, elementN]]]) - 将所有参数拼装成一个类型数组。要特别注意的是如果元素不合法，则会得到0.</li>
 </ul>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Int8Array [ 1, 2, 3, 0 ]</span></div><div class="line"><span class="built_in">console</span>.log(</div><div class="line">    <span class="built_in">Int8Array</span>.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, [<span class="number">4</span>, <span class="number">5</span>])</div><div class="line">);</div></pre></td></tr></table></figure>
-<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><ul>
+<h4 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h4><ul>
 <li>buffer - TypeArray内部使用的ArrayBuffer对象，如果将一个外部ArrayBuffer当参数构造了一个TypeArray，那么该buffer就是那个外部ArrayBuffer。如果为同一个ArrayBuffer建立两个TypeArray，当使用了其中一个TypeArray的API对数据做修改，另一个也会生效，因为它们使用了同一个数据源。</li>
 </ul>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> buffer = <span class="keyword">new</span> <span class="built_in">ArrayBuffer</span>(<span class="number">2</span>);</div><div class="line"><span class="keyword">var</span> int8Array = <span class="keyword">new</span> <span class="built_in">Int8Array</span>(buffer);</div><div class="line"><span class="keyword">var</span> int16Array = <span class="keyword">new</span> <span class="built_in">Int16Array</span>(buffer);</div><div class="line"></div><div class="line"><span class="comment">// Int16Array [ 0 ] Int8Array [ 0, 0 ]</span></div><div class="line"><span class="built_in">console</span>.log(int16Array, int8Array);</div><div class="line">int16Array[<span class="number">0</span>] = <span class="number">123456</span>;</div><div class="line"><span class="comment">// Int16Array [ -7616 ] Int8Array [ 64, -30 ]</span></div><div class="line"><span class="comment">// 二者都变了，因为ArrayBuffer变了</span></div><div class="line"><span class="built_in">console</span>.log(int16Array, int8Array);</div></pre></td></tr></table></figure>
@@ -449,7 +450,7 @@
 <li>length - 保存了当前TypeArray的元素个数，该属性跟Array一致，在这里特地列出来是为了跟byteLength做对比。</li>
 </ul>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> buffer = <span class="keyword">new</span> <span class="built_in">ArrayBuffer</span>(<span class="number">10</span>);</div><div class="line"><span class="keyword">var</span> int8Array = <span class="keyword">new</span> <span class="built_in">Int8Array</span>(buffer);</div><div class="line"><span class="keyword">var</span> int16Array = <span class="keyword">new</span> <span class="built_in">Int16Array</span>(buffer);</div><div class="line"></div><div class="line"><span class="comment">// 10 5</span></div><div class="line"><span class="built_in">console</span>.log(int8Array.length, int16Array.length);</div></pre></td></tr></table></figure>
-<h3 id="成员方法"><a href="#成员方法" class="headerlink" title="成员方法"></a>成员方法</h3><p>TypeArray实现了大部份Array的方法，所以你可以调用类似map、every之类的方法处理数据。这方面的方法与属性就不在这里数说了，仅列出Array没有的。</p>
+<h4 id="成员方法"><a href="#成员方法" class="headerlink" title="成员方法"></a>成员方法</h4><p>TypeArray实现了大部份Array的方法，所以你可以调用类似map、every之类的方法处理数据。这方面的方法与属性就不在这里数说了，仅列出Array没有的。</p>
 <ul>
 <li>set(array|typeArray [,offset])<br>将一个数组或者类型数组复制到TypeArray指定的位置中，如果不指定位置则是从头覆盖。如果数据超出范围，则会将数据截断。</li>
 </ul>
@@ -462,12 +463,12 @@
 </li>
 </ul>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> int8Array = <span class="keyword">new</span> <span class="built_in">Int8Array</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]);</div><div class="line"><span class="keyword">var</span> subarray = int8Array.subarray(<span class="number">1</span>, <span class="number">3</span>);</div><div class="line"></div><div class="line"><span class="comment">// Int8Array [ 2, 3 ]</span></div><div class="line"><span class="comment">// 对应着int8Array[1]以及int8Array[2]，不包含int8Array[3]</span></div><div class="line"><span class="built_in">console</span>.log(subarray);</div><div class="line"></div><div class="line">int8Array[<span class="number">2</span>] = <span class="number">20</span>;</div><div class="line"><span class="comment">// Int8Array [ 2, 20 ] 注意，subarray[1]被更改了</span></div><div class="line"><span class="built_in">console</span>.log(subarray);</div></pre></td></tr></table></figure>
-<h2 id="DataView"><a href="#DataView" class="headerlink" title="DataView"></a>DataView</h2><p>DataView提供了相对TypeArray更为灵活的方式用于操作数据，从TypeArray的各种示例上看，TypeArray其实就对应着C语言的数组（定长、元素同类型），而DataView则可以操作类似结构体的东西，它允许你随时切换不同的类型读写数据。</p>
-<h3 id="初始化-1"><a href="#初始化-1" class="headerlink" title="初始化"></a>初始化</h3><p>new DataView(buffer [, byteOffset [, byteLength]])</p>
+<h3 id="DataView"><a href="#DataView" class="headerlink" title="DataView"></a>DataView</h3><p>DataView提供了相对TypeArray更为灵活的方式用于操作数据，从TypeArray的各种示例上看，TypeArray其实就对应着C语言的数组（定长、元素同类型），而DataView则可以操作类似结构体的东西，它允许你随时切换不同的类型读写数据。</p>
+<h4 id="初始化-1"><a href="#初始化-1" class="headerlink" title="初始化"></a>初始化</h4><p>new DataView(buffer [, byteOffset [, byteLength]])</p>
 <p>DataView只可以使用ArrayBuffer作为操作对象，同时允许指定操作区域，这个跟TypeArray是一致的。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> buffer = <span class="keyword">new</span> <span class="built_in">ArrayBuffer</span>(<span class="number">10</span>);</div><div class="line"><span class="keyword">var</span> view = <span class="keyword">new</span> <span class="built_in">DataView</span>(buffer);</div><div class="line"></div><div class="line"><span class="comment">// DataView &#123;</span></div><div class="line"><span class="comment">//     byteLength: 10,</span></div><div class="line"><span class="comment">//     byteOffset: 0,</span></div><div class="line"><span class="comment">//     buffer: ArrayBuffer &#123; byteLength: 10 &#125;</span></div><div class="line"><span class="comment">// &#125;</span></div><div class="line"><span class="built_in">console</span>.log(view);</div></pre></td></tr></table></figure>
-<h3 id="成员变量-1"><a href="#成员变量-1" class="headerlink" title="成员变量"></a>成员变量</h3><p>与TypeArray一模一样，DataView拥有buffer、byteOffset以及byteLength三个成员变量，它们的作用也是一样的，所以这里不再详说。</p>
-<h3 id="成员方法-1"><a href="#成员方法-1" class="headerlink" title="成员方法"></a>成员方法</h3><p>DataView的成员方法提供了一系列的get、set方法，用法基本上一致： </p>
+<h4 id="成员变量-1"><a href="#成员变量-1" class="headerlink" title="成员变量"></a>成员变量</h4><p>与TypeArray一模一样，DataView拥有buffer、byteOffset以及byteLength三个成员变量，它们的作用也是一样的，所以这里不再详说。</p>
+<h4 id="成员方法-1"><a href="#成员方法-1" class="headerlink" title="成员方法"></a>成员方法</h4><p>DataView的成员方法提供了一系列的get、set方法，用法基本上一致： </p>
 <ul>
 <li>get 在byteOffset指定的位置读取相应类型的值，littleEndian指定数据存储是高位优先还是低位优先<ul>
 <li>getInt8(byteOffset)</li>
@@ -494,7 +495,7 @@
 </ul>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> buffer = <span class="keyword">new</span> <span class="built_in">ArrayBuffer</span>(<span class="number">2</span>);</div><div class="line"><span class="keyword">var</span> view = <span class="keyword">new</span> <span class="built_in">DataView</span>(buffer);</div><div class="line">view.setInt8(<span class="number">0</span>, <span class="number">10</span>);</div><div class="line"><span class="comment">// 10</span></div><div class="line"><span class="built_in">console</span>.log(view.getInt8(<span class="number">0</span>));</div></pre></td></tr></table></figure>
 <p>关于Endian方面请看后边章节。</p>
-<h1 id="数据的存储方式"><a href="#数据的存储方式" class="headerlink" title="数据的存储方式"></a>数据的存储方式</h1><p>说说这些类型数组元素的数据表示方式吧！当然，我不打算在这里全部讲完，特别是IEEE规定的单精度浮点数和双精度浮点数是怎么用二进制表示的估计能另起一篇文章。</p>
+<h2 id="数据的存储方式"><a href="#数据的存储方式" class="headerlink" title="数据的存储方式"></a>数据的存储方式</h2><p>说说这些类型数组元素的数据表示方式吧！当然，我不打算在这里全部讲完，特别是IEEE规定的单精度浮点数和双精度浮点数是怎么用二进制表示的估计能另起一篇文章。</p>
 <p>一个整型数字写成2进制之后以书写习惯来说左边是高位，右边是低位。举个例子，int8的5使用二进制是这么表示的：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0000 0101</div></pre></td></tr></table></figure>
 <p>最左边的0是符号位，表示非负数，101则是5的二进制写法。</p>
@@ -518,7 +519,7 @@
 <p>明显高位溢出了，于是将高位多余的1截掉变成：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0000 0000</div></pre></td></tr></table></figure>
 <p>它的值如我们所料是0，这就是补码。uint8由于没有正负之分，它的所有值都是非负数，所以就不需要考虑补码。</p>
-<h1 id="数据溢出截断"><a href="#数据溢出截断" class="headerlink" title="数据溢出截断"></a>数据溢出截断</h1><p>首先需要了解一下int16用二进制是如何表示的，以3850为例子，它的二进制表示方式是这样子的：</p>
+<h2 id="数据溢出截断"><a href="#数据溢出截断" class="headerlink" title="数据溢出截断"></a>数据溢出截断</h2><p>首先需要了解一下int16用二进制是如何表示的，以3850为例子，它的二进制表示方式是这样子的：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">00001111 00001010</div></pre></td></tr></table></figure>
 <p>int16占了两个字节，因此它被截成两断，我们把左边的字节称为高位字节，右边的字节称为低位字节。在内存中它是如何存放的呢？建立一个Int8Array来看一下：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> buffer = <span class="keyword">new</span> <span class="built_in">ArrayBuffer</span>(<span class="number">2</span>);</div><div class="line"><span class="keyword">var</span> int16Array = <span class="keyword">new</span> <span class="built_in">Int16Array</span>(buffer);</div><div class="line"><span class="keyword">var</span> int8Array = <span class="keyword">new</span> <span class="built_in">Int8Array</span>(buffer);</div><div class="line"></div><div class="line">int16Array[<span class="number">0</span>] = <span class="number">3850</span>;</div><div class="line"></div><div class="line"><span class="comment">// Int16Array [ 3850 ]</span></div><div class="line"><span class="built_in">console</span>.log(int16Array);</div><div class="line"></div><div class="line"><span class="comment">// Int8Array [ 10, 15 ]</span></div><div class="line"><span class="built_in">console</span>.log(int8Array);</div></pre></td></tr></table></figure>
@@ -529,7 +530,7 @@
 <p>那么当数据溢出截断又是怎么处理的？尝试着给一个int8字节赋值3850，看看最终得到的值是什么:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> int8Array = <span class="keyword">new</span> <span class="built_in">Int8Array</span>([<span class="number">3850</span>]);</div><div class="line"><span class="comment">//Int8Array [ 10 ]</span></div><div class="line"><span class="built_in">console</span>.log(int8Array);</div></pre></td></tr></table></figure>
 <p>很明显，它把15抛弃了，也就是保存了低位字节，抛弃高位。事实上，溢出处理在各种CPU上都是保留低位能保留的字节，把高位的截断，这个与数据存储是按高位优先还是低位优先没什么关系。</p>
-<h1 id="字节序处理"><a href="#字节序处理" class="headerlink" title="字节序处理"></a>字节序处理</h1><p>请先看以下示例代码在我机子上跑的情况：</p>
+<h2 id="字节序处理"><a href="#字节序处理" class="headerlink" title="字节序处理"></a>字节序处理</h2><p>请先看以下示例代码在我机子上跑的情况：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> buffer = <span class="keyword">new</span> <span class="built_in">ArrayBuffer</span>(<span class="number">2</span>);</div><div class="line"><span class="keyword">var</span> view = <span class="keyword">new</span> <span class="built_in">DataView</span>(buffer);</div><div class="line"><span class="keyword">var</span> int16Array = <span class="keyword">new</span> <span class="built_in">Int16Array</span>(buffer);</div><div class="line">view.setInt8(<span class="number">0</span>, <span class="number">10</span>);</div><div class="line"><span class="comment">// 10</span></div><div class="line"><span class="built_in">console</span>.log(view.getInt8(<span class="number">0</span>))</div><div class="line"><span class="comment">// 2560 用二进制表示是：00001010 00000000，</span></div><div class="line"><span class="built_in">console</span>.log(view.getInt16(<span class="number">0</span>));</div><div class="line"></div><div class="line">int16Array[<span class="number">0</span>] = <span class="number">10</span>;</div><div class="line"><span class="comment">// 2560!</span></div><div class="line"><span class="built_in">console</span>.log(view.getInt16(<span class="number">0</span>));</div></pre></td></tr></table></figure>
 <p>仔细看结果，很明显，view使用的是高位优先的读写方式，而TypeArray使用的是低位优先的读写方式。在内存中两个字节的数据在setInt8(0, 10)的时候会变成</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">00001010 00000000</div></pre></td></tr></table></figure>
@@ -681,7 +682,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archivers">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">10</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -698,7 +699,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-count">22</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -760,7 +761,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ArrayBuffer"><span class="nav-number">1.</span> <span class="nav-text">ArrayBuffer</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据视图"><span class="nav-number">2.</span> <span class="nav-text">数据视图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TypeArray"><span class="nav-number">2.1.</span> <span class="nav-text">TypeArray</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化"><span class="nav-number">2.1.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态成员"><span class="nav-number">2.1.2.</span> <span class="nav-text">静态成员</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#成员变量"><span class="nav-number">2.1.3.</span> <span class="nav-text">成员变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#成员方法"><span class="nav-number">2.1.4.</span> <span class="nav-text">成员方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DataView"><span class="nav-number">2.2.</span> <span class="nav-text">DataView</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#成员变量-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">成员变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#成员方法-1"><span class="nav-number">2.2.3.</span> <span class="nav-text">成员方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据的存储方式"><span class="nav-number">3.</span> <span class="nav-text">数据的存储方式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据溢出截断"><span class="nav-number">4.</span> <span class="nav-text">数据溢出截断</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字节序处理"><span class="nav-number">5.</span> <span class="nav-text">字节序处理</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ArrayBuffer"><span class="nav-number">1.</span> <span class="nav-text">ArrayBuffer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据视图"><span class="nav-number">2.</span> <span class="nav-text">数据视图</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TypeArray"><span class="nav-number">2.1.</span> <span class="nav-text">TypeArray</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化"><span class="nav-number">2.1.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#静态成员"><span class="nav-number">2.1.2.</span> <span class="nav-text">静态成员</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#成员变量"><span class="nav-number">2.1.3.</span> <span class="nav-text">成员变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#成员方法"><span class="nav-number">2.1.4.</span> <span class="nav-text">成员方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataView"><span class="nav-number">2.2.</span> <span class="nav-text">DataView</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#成员变量-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">成员变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#成员方法-1"><span class="nav-number">2.2.3.</span> <span class="nav-text">成员方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据的存储方式"><span class="nav-number">3.</span> <span class="nav-text">数据的存储方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据溢出截断"><span class="nav-number">4.</span> <span class="nav-text">数据溢出截断</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字节序处理"><span class="nav-number">5.</span> <span class="nav-text">字节序处理</span></a></li></ol></div>
             
 
           </div>
