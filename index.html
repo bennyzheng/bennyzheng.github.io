@@ -375,9 +375,9 @@
 
       
         
-          <p>前几年碰上一个需求，内容是一个注册表单，其中有几个字段需要调用服务器的接口进行验证才允许提交，当时自己写了一个异步队列封装用来实现这个功能，当然为了赶进度仅是实现了功能，没有什么复用性，而且代码组织也比较差。</p>
-<p>随后我想想这种需求肯定一堆人会碰上，要不找找有没有什么好的解决方案，当时让我找到了Promise/A+规范以及when.js。很幸运的，Promise/A+进入了制定Web标准的那帮家伙的眼里，并且得到认可，目前在不少浏览器中已经可以直接使用Promise对象，甚至是可以使用async/await关键词将异步操作变得非常简单起来，当然这也是需要配合Promise。若是考虑到兼容性问题，我们还有<a href="https://github.com/cujojs/when">when.js</a>之类的开源库可以使用。</p>
-<p>关于Promise/A+的规范内容可以查阅<a href="https://segmentfault.com/a/1190000002452115">《Promise/A+》</a>或者它的英文原文<a href="https://promisesaplus.com/">《Promises/A+》</a>。</p>
+          <p>前前几年碰上一个需求，内容是一个注册表单，其中有几个字段需要调用服务器的接口进行验证才允许提交，当时自己写了一个异步队列封装用来实现这个功能，当然为了赶进度仅是实现了功能，没有什么复用性，而且代码组织也比较差。</p>
+<p> 随后我想想这种需求肯定一堆人会碰上，要不找找有没有什么好的解决方案，当时让我找到了Promise/A+规范以及when.js。很幸运的，Promise/A+进入了制定Web标准的那帮家伙的眼里，并且得到认可，目前在不少浏览器中已经可以直接使用Promise对象，甚至是可以使用async/await关键词将异步操作变得非常简单起来，当然这也是需要配合Promise。若是考虑到兼容性问题，我们还有<a href="https://github.com/cujojs/when">when.js</a>之类的开源库可以使用。</p>
+<p> 关于Promise/A+的规范内容可以查阅<a href="https://segmentfault.com/a/1190000002452115">《Promise/A+》</a>或者它的英文原文<a href="https://promisesaplus.com/">《Promises/A+》</a>。</p>
           <!--noindex-->
           <div class="post-more-link text-center">
             <a class="btn" href="/archivers/2017/02/javascript-asynchronous-programming/#more" rel="contents">
