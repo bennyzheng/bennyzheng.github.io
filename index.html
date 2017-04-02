@@ -27,6 +27,9 @@
 
 
 
+
+
+
   
   
   <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
@@ -45,6 +48,12 @@
   
 
   
+    
+      
+    
+
+    
+  
 
   
 
@@ -55,8 +64,7 @@
   
     
     
-    <link href="/css/fonts.css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-    <!--link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css"-->
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
   
 
 
@@ -68,6 +76,8 @@
 
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
+
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -102,11 +112,11 @@
   var CONFIG = {
     root: '/',
     scheme: 'Pisces',
-    sidebar: {"position":"right","display":"post"},
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":true},
     fancybox: true,
     motion: true,
     duoshuo: {
-      userId: 'undefined',
+      userId: '0',
       author: '博主'
     },
     algolia: {
@@ -143,36 +153,44 @@
 
 
 
+
+
+
+
   
   
     
   
 
-  <div class="container one-collumn sidebar-position-right 
+  <div class="container sidebar-position-right 
    page-home 
  ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-meta ">
-  
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
 
-  <div class="custom-logo-site-title">
-    <a href="/"  class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <span class="site-title">思考与记录</span>
-      <span class="logo-line-after"><i></i></span>
-    </a>
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">思考与记录</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">有时候停下来思考，然后拿起笔记录。</p>
+      
   </div>
-  <p class="site-subtitle">有时候停下来思考，然后拿起笔记录。</p>
-</div>
 
-<div class="site-nav-toggle">
-  <button>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-  </button>
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
 </div>
 
 <nav class="site-nav">
@@ -223,32 +241,9 @@
       
 
       
-        <li class="menu-item menu-item-search">
-          
-            <a href="javascript:;" class="popup-trigger">
-          
-            
-              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
-            
-            搜索
-          </a>
-        </li>
-      
     </ul>
   
 
-  
-    <div class="site-search">
-      
-  <div class="popup">
- <span class="search-icon fa fa-search"></span>
- <input type="text" id="local-search-input">
- <div id="local-search-result"></div>
- <span class="popup-btn-close">close</span>
-</div>
-
-
-    </div>
   
 </nav>
 
@@ -273,20 +268,17 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2017/02/javascript-asynchronous-programming/">
+    <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2017/02/javascript-asynchronous-programming/">
 
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="benny zheng">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/media/face.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="思考与记录">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="benny zheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/media/face.png">
     </span>
-  </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思考与记录">
+    </span>
 
     
       <header class="post-header">
@@ -312,8 +304,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-29T00:00:00+08:00">
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T00:00:00+08:00">
                 17/03/29
               </time>
             
@@ -325,11 +319,15 @@
 
           
             <span class="post-category" >
+            
               <span class="post-meta-divider">|</span>
+            
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">分类于</span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/javascript/" itemprop="url" rel="index">
@@ -345,18 +343,11 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <a href="/archivers/2017/02/javascript-asynchronous-programming/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="archivers/2017/02/javascript-asynchronous-programming/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
-
           
+
           
 
           
@@ -379,7 +370,7 @@
 <p>随后我想想这种需求肯定一堆人会碰上，要不找找有没有什么好的解决方案，当时让我找到了Promise/A+规范以及when.js。很幸运的，Promise/A+进入了制定Web标准的那帮家伙的眼里，并且得到认可，目前在不少浏览器中已经可以直接使用Promise对象，甚至是可以使用async/await关键词将异步操作变得非常简单起来，当然这也是需要配合Promise。若是考虑到兼容性问题，我们还有<a href="https://github.com/cujojs/when">when.js</a>之类的开源库可以使用。</p>
 <p>关于Promise/A+的规范内容可以查阅<a href="https://segmentfault.com/a/1190000002452115">《Promise/A+》</a>或者它的英文原文<a href="https://promisesaplus.com/">《Promises/A+》</a>。</p>
           <!--noindex-->
-          <div class="post-more-link text-center">
+          <div class="post-button text-center">
             <a class="btn" href="/archivers/2017/02/javascript-asynchronous-programming/#more" rel="contents">
               阅读全文 &raquo;
             </a>
@@ -397,8 +388,13 @@
       
     </div>
 
+    <div>
+      
+    </div>
 
     <footer class="post-footer">
+      
+
       
 
       
@@ -421,20 +417,17 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2017/02/node-http-client/">
+    <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2017/02/node-http-client/">
 
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="benny zheng">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/media/face.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="思考与记录">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="benny zheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/media/face.png">
     </span>
-  </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思考与记录">
+    </span>
 
     
       <header class="post-header">
@@ -460,8 +453,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-22T00:00:00+08:00">
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-22T00:00:00+08:00">
                 17/03/22
               </time>
             
@@ -473,11 +468,15 @@
 
           
             <span class="post-category" >
+            
               <span class="post-meta-divider">|</span>
+            
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">分类于</span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/Node-js学习笔记/" itemprop="url" rel="index">
@@ -493,18 +492,11 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <a href="/archivers/2017/02/node-http-client/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="archivers/2017/02/node-http-client/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
-
           
+
           
 
           
@@ -525,7 +517,7 @@
         
           <p>过年休息了一阵子，似乎吃胖了一圈，想想该继续研究Node.js的东西了。<br>http模块涉及到的知识特别丰富，Node.js提供的API主要分成两大块，一部份是客户端发请求，另一部份是服务器端的http服务。涉及到的模块也较多，比如net模块、dns模块等等。</p>
           <!--noindex-->
-          <div class="post-more-link text-center">
+          <div class="post-button text-center">
             <a class="btn" href="/archivers/2017/02/node-http-client/#more" rel="contents">
               阅读全文 &raquo;
             </a>
@@ -543,8 +535,13 @@
       
     </div>
 
+    <div>
+      
+    </div>
 
     <footer class="post-footer">
+      
+
       
 
       
@@ -567,20 +564,17 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/12/node-process/">
+    <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/12/node-process/">
 
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="benny zheng">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/media/face.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="思考与记录">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="benny zheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/media/face.png">
     </span>
-  </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思考与记录">
+    </span>
 
     
       <header class="post-header">
@@ -606,8 +600,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-01T00:00:00+08:00">
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-01T00:00:00+08:00">
                 16/12/01
               </time>
             
@@ -619,11 +615,15 @@
 
           
             <span class="post-category" >
+            
               <span class="post-meta-divider">|</span>
+            
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">分类于</span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/Node-js学习笔记/" itemprop="url" rel="index">
@@ -639,18 +639,11 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <a href="/archivers/2016/12/node-process/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="archivers/2016/12/node-process/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
-
           
+
           
 
           
@@ -675,7 +668,7 @@
 <p>process是Node.js提供给用户与当前进程交互的全局对象，你可以在任何地方使用它而不需要require任何模块。process是emitEvent的一个实例，意味着它拥有事件机制。我发现Node.js是个类都是emitEvent的子类，是个对象都是emitEvent的实例，毕竟Node.js许多东西都建立在事件驱动的理念上，同时也意味着在Node.js使用费时的同步操作基本上是个愚蠢的做法。</p>
 <p>child_process模块则是Node.js提供给父进程使用的模块，想要学习进程相关的操作，process对象与child_process模块都是得一起研究的。</p>
           <!--noindex-->
-          <div class="post-more-link text-center">
+          <div class="post-button text-center">
             <a class="btn" href="/archivers/2016/12/node-process/#more" rel="contents">
               阅读全文 &raquo;
             </a>
@@ -693,8 +686,13 @@
       
     </div>
 
+    <div>
+      
+    </div>
 
     <footer class="post-footer">
+      
+
       
 
       
@@ -717,20 +715,17 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/event-loop-and-multi-thread/">
+    <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/event-loop-and-multi-thread/">
 
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="benny zheng">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/media/face.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="思考与记录">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="benny zheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/media/face.png">
     </span>
-  </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思考与记录">
+    </span>
 
     
       <header class="post-header">
@@ -756,8 +751,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-26T02:33:32+08:00">
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-26T02:33:32+08:00">
                 16/11/26
               </time>
             
@@ -769,11 +766,15 @@
 
           
             <span class="post-category" >
+            
               <span class="post-meta-divider">|</span>
+            
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">分类于</span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/javascript/" itemprop="url" rel="index">
@@ -789,18 +790,11 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <a href="/archivers/2016/11/event-loop-and-multi-thread/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="archivers/2016/11/event-loop-and-multi-thread/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
-
           
+
           
 
           
@@ -821,7 +815,7 @@
         
           <p>Javascript在浏览器中一直都是以单线程的方式运行，这意味着它同一时间只能干一件事，前端们不用担心你在读完一个变量的时候该变量马上被另一个线程修改而导致后续计算变得不准确，也不用担心对一个DOM节点做修改操作的时候突然它被删除。支持多线程的语言都有一个东西叫线程锁，但是Javascript作为操作HTML页面的脚本语言它应该足够简单，所以单线程是最合适的，但同样有方法实现多线程以提高系统资源利用率。</p>
           <!--noindex-->
-          <div class="post-more-link text-center">
+          <div class="post-button text-center">
             <a class="btn" href="/archivers/2016/11/event-loop-and-multi-thread/#more" rel="contents">
               阅读全文 &raquo;
             </a>
@@ -839,8 +833,13 @@
       
     </div>
 
+    <div>
+      
+    </div>
 
     <footer class="post-footer">
+      
+
       
 
       
@@ -863,20 +862,17 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/endian/">
+    <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/endian/">
 
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="benny zheng">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/media/face.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="思考与记录">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="benny zheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/media/face.png">
     </span>
-  </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思考与记录">
+    </span>
 
     
       <header class="post-header">
@@ -902,8 +898,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-23T00:00:00+08:00">
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-23T00:00:00+08:00">
                 16/11/23
               </time>
             
@@ -915,11 +913,15 @@
 
           
             <span class="post-category" >
+            
               <span class="post-meta-divider">|</span>
+            
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">分类于</span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/其它技术话题/" itemprop="url" rel="index">
@@ -935,18 +937,11 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <a href="/archivers/2016/11/endian/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="archivers/2016/11/endian/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
-
           
+
           
 
           
@@ -967,7 +962,7 @@
         
           <p>现有两大CPU派系PowerPC以及Intel在数据存储上存在着差异，二者分别采用了big-endian以及little-endian方式保存一个多字节的数字。原本我从来没关注过这个问题，现有的工具已经把它们的差异封装得很好了，直到我最近尝试去操作了一些二进制数据才意识到我需要关注一下。</p>
           <!--noindex-->
-          <div class="post-more-link text-center">
+          <div class="post-button text-center">
             <a class="btn" href="/archivers/2016/11/endian/#more" rel="contents">
               阅读全文 &raquo;
             </a>
@@ -985,8 +980,13 @@
       
     </div>
 
+    <div>
+      
+    </div>
 
     <footer class="post-footer">
+      
+
       
 
       
@@ -1009,20 +1009,17 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/node-buffer/">
+    <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/node-buffer/">
 
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="benny zheng">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/media/face.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="思考与记录">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="benny zheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/media/face.png">
     </span>
-  </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思考与记录">
+    </span>
 
     
       <header class="post-header">
@@ -1048,8 +1045,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-21T00:00:00+08:00">
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-21T00:00:00+08:00">
                 16/11/21
               </time>
             
@@ -1061,11 +1060,15 @@
 
           
             <span class="post-category" >
+            
               <span class="post-meta-divider">|</span>
+            
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">分类于</span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/Node-js学习笔记/" itemprop="url" rel="index">
@@ -1081,18 +1084,11 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <a href="/archivers/2016/11/node-buffer/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="archivers/2016/11/node-buffer/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
-
           
+
           
 
           
@@ -1113,7 +1109,7 @@
         
           <p>刚把Javascript本身新引入的TypeArray以及ArrayBuffer好了解了一下，Node.js针对二进制数据提供了buffer模块，手册中提到Buffer是Int8Array的另一种更适合Node.js使用的实现方式（我看是因为之前TypeArray还没实现结果先出了Buffer，现在准备一条道走到黑吧……不过确实用起来挺好用）。在Node.js的数据交换过程中，buffer模块经常会被使用到，比如数据流。</p>
           <!--noindex-->
-          <div class="post-more-link text-center">
+          <div class="post-button text-center">
             <a class="btn" href="/archivers/2016/11/node-buffer/#more" rel="contents">
               阅读全文 &raquo;
             </a>
@@ -1131,8 +1127,13 @@
       
     </div>
 
+    <div>
+      
+    </div>
 
     <footer class="post-footer">
+      
+
       
 
       
@@ -1155,20 +1156,17 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/arraybuffer-and-dataview/">
+    <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/arraybuffer-and-dataview/">
 
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="benny zheng">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/media/face.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="思考与记录">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="benny zheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/media/face.png">
     </span>
-  </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思考与记录">
+    </span>
 
     
       <header class="post-header">
@@ -1194,8 +1192,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-20T00:00:00+08:00">
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-20T00:00:00+08:00">
                 16/11/20
               </time>
             
@@ -1207,11 +1207,15 @@
 
           
             <span class="post-category" >
+            
               <span class="post-meta-divider">|</span>
+            
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">分类于</span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/javascript/" itemprop="url" rel="index">
@@ -1227,18 +1231,11 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <a href="/archivers/2016/11/arraybuffer-and-dataview/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="archivers/2016/11/arraybuffer-and-dataview/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
-
           
+
           
 
           
@@ -1259,7 +1256,7 @@
         
           <p>Javascript在数据的处理上一直不是强项，比如数字不分整型和浮点数统一使用了64位浮点数，如果涉及到二进制运算则显得非常无力，在数据传输上也非常浪费带宽。在ES6针对Javascript二进制数据处理上的无力引入了原始缓冲区ArrayBuffer，并且还提供了多种位数的int类型数组以及数据视图来处理数据。</p>
           <!--noindex-->
-          <div class="post-more-link text-center">
+          <div class="post-button text-center">
             <a class="btn" href="/archivers/2016/11/arraybuffer-and-dataview/#more" rel="contents">
               阅读全文 &raquo;
             </a>
@@ -1277,8 +1274,13 @@
       
     </div>
 
+    <div>
+      
+    </div>
 
     <footer class="post-footer">
+      
+
       
 
       
@@ -1301,20 +1303,17 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/node-url/">
+    <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/node-url/">
 
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="benny zheng">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/media/face.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="思考与记录">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="benny zheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/media/face.png">
     </span>
-  </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思考与记录">
+    </span>
 
     
       <header class="post-header">
@@ -1340,8 +1339,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-20T00:00:00+08:00">
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-20T00:00:00+08:00">
                 16/11/20
               </time>
             
@@ -1353,11 +1354,15 @@
 
           
             <span class="post-category" >
+            
               <span class="post-meta-divider">|</span>
+            
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">分类于</span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/Node-js学习笔记/" itemprop="url" rel="index">
@@ -1373,18 +1378,11 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <a href="/archivers/2016/11/node-url/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="archivers/2016/11/node-url/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
-
           
+
           
 
           
@@ -1405,7 +1403,7 @@
         
           <h1 id="Node-js-url模块"><a href="#Node-js-url模块" class="headerlink" title="Node.js - url模块"></a>Node.js - url模块</h1><p>URL是每一位网虫都使用过的东西，我记得第一次上网吧玩的时候，网吧老板帮我输了一个地址，在那时候很出名的聊天室网站”碧海银沙”，那时候我觉得上网就是上这个网站聊天，这是我第一次接触到URL。  </p>
           <!--noindex-->
-          <div class="post-more-link text-center">
+          <div class="post-button text-center">
             <a class="btn" href="/archivers/2016/11/node-url/#more" rel="contents">
               阅读全文 &raquo;
             </a>
@@ -1423,8 +1421,13 @@
       
     </div>
 
+    <div>
+      
+    </div>
 
     <footer class="post-footer">
+      
+
       
 
       
@@ -1447,20 +1450,17 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/node-path/">
+    <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/node-path/">
 
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="benny zheng">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/media/face.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="思考与记录">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="benny zheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/media/face.png">
     </span>
-  </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思考与记录">
+    </span>
 
     
       <header class="post-header">
@@ -1486,8 +1486,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-18T00:00:00+08:00">
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-18T00:00:00+08:00">
                 16/11/18
               </time>
             
@@ -1499,11 +1501,15 @@
 
           
             <span class="post-category" >
+            
               <span class="post-meta-divider">|</span>
+            
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">分类于</span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/Node-js学习笔记/" itemprop="url" rel="index">
@@ -1519,18 +1525,11 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <a href="/archivers/2016/11/node-path/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="archivers/2016/11/node-path/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
-
           
+
           
 
           
@@ -1551,7 +1550,7 @@
         
           <p>Node.js提供了一组非常方便的API专门用来操作路径。不过当你翻开Node.js手册关于path模块的时候，开头那个大大的章节标题”<strong>Windows vs. POSIX</strong>“呈现在你的面前，不知道你是什么感觉？反正我是觉得蛋疼乳酸菊花紧，兼容问题到哪都逃不掉啊！<br> Win32以及类Unix的POSIX标准在路径上真心差距很大，这个只要玩过windows以及类Unix系统的人都知道，许多代码由于路径兼容问题直接无法跨平台使用。</p>
           <!--noindex-->
-          <div class="post-more-link text-center">
+          <div class="post-button text-center">
             <a class="btn" href="/archivers/2016/11/node-path/#more" rel="contents">
               阅读全文 &raquo;
             </a>
@@ -1569,8 +1568,13 @@
       
     </div>
 
+    <div>
+      
+    </div>
 
     <footer class="post-footer">
+      
+
       
 
       
@@ -1593,20 +1597,17 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/explore-data-stream/">
+    <link itemprop="mainEntityOfPage" href="https://bennyzheng.github.io/archivers/2016/11/explore-data-stream/">
 
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="benny zheng">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/media/face.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="思考与记录">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="思考与记录" src="">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="benny zheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/media/face.png">
     </span>
-  </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="思考与记录">
+    </span>
 
     
       <header class="post-header">
@@ -1632,8 +1633,10 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-16T00:00:00+08:00">
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-16T00:00:00+08:00">
                 16/11/16
               </time>
             
@@ -1645,11 +1648,15 @@
 
           
             <span class="post-category" >
+            
               <span class="post-meta-divider">|</span>
+            
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">分类于</span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/Node-js学习笔记/" itemprop="url" rel="index">
@@ -1665,18 +1672,11 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <a href="/archivers/2016/11/explore-data-stream/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="archivers/2016/11/explore-data-stream/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
-
           
+
           
 
           
@@ -1697,7 +1697,7 @@
         
           <p>近期一位同事问起数据流方面的问题，在做前端开发时很少直接面对数据流，只有在做node.js相关的东西会接触得比较多。我当时简单做了一些解答，但我认为我解答得不是很好，至少她还是一脸的迷茫。于是我准备在这里试着讲清数据流的来龙去脉。</p>
           <!--noindex-->
-          <div class="post-more-link text-center">
+          <div class="post-button text-center">
             <a class="btn" href="/archivers/2016/11/explore-data-stream/#more" rel="contents">
               阅读全文 &raquo;
             </a>
@@ -1715,8 +1715,13 @@
       
     </div>
 
+    <div>
+      
+    </div>
 
     <footer class="post-footer">
+      
+
       
 
       
@@ -1766,19 +1771,26 @@
                src="/media/face.png"
                alt="benny zheng" />
           <p class="site-author-name" itemprop="name">benny zheng</p>
-          <p class="site-description motion-element" itemprop="description">一名前端开发工程师，曾在新浪中国以及YY语音写过几年代码，现在在深圳泰久继续写代码。</p>
+           
+              <p class="site-description motion-element" itemprop="description">一名前端开发工程师，曾在新浪中国以及YY语音写过几年代码，现在在深圳泰久继续写代码。</p>
+          
         </div>
         <nav class="site-state motion-element">
-          <div class="site-state-item site-state-posts">
-            <a href="/archivers">
-              <span class="site-state-item-count">10</span>
-              <span class="site-state-item-name">日志</span>
-            </a>
-          </div>
 
           
+            <div class="site-state-item site-state-posts">
+              <a href="/archivers">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
             <div class="site-state-item site-state-categories">
-              <a href="/categories">
+              <a href="/categories/index.html">
                 <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">分类</span>
               </a>
@@ -1786,8 +1798,10 @@
           
 
           
+            
+            
             <div class="site-state-item site-state-tags">
-              <a href="/tags">
+              <a href="/tags/index.html">
                 <span class="site-state-item-count">22</span>
                 <span class="site-state-item-name">标签</span>
               </a>
@@ -1820,7 +1834,7 @@
               <span class="links-of-author-item">
                 <a href="http://weibo.com/qihontin" target="_blank" title="新浪微博">
                   
-                    <i class="fa fa-fw fa-weibo"></i>
+                    <i class="fa fa-fw fa-globe"></i>
                   
                   新浪微博
                 </a>
@@ -1839,6 +1853,8 @@
 
 
       </section>
+
+      
 
       
 
@@ -1870,9 +1886,15 @@
       </div>
     </footer>
 
-    <div class="back-to-top">
-      <i class="fa fa-arrow-up"></i>
-    </div>
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
   </div>
 
   
@@ -1892,6 +1914,9 @@
 
 
   
+
+
+
 
 
 
@@ -1944,162 +1969,44 @@
 
   
 
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"bennyzheng"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
 
   
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
 
 
 
+
+	
 
 
 
 
 
   
-  
-  <script type="text/javascript">
-    // Popup Window;
-    var isfetched = false;
-    // Search DB path;
-    var search_path = "search.xml";
-    if (search_path.length == 0) {
-      search_path = "search.xml";
-    }
-    var path = "/" + search_path;
-    // monitor main search box;
-
-    function proceedsearch() {
-      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
-      $('.popup').toggle();
-    }
-    // search function;
-    var searchFunc = function(path, search_id, content_id) {
-      'use strict';
-      $.ajax({
-        url: path,
-        dataType: "xml",
-        async: true,
-        success: function( xmlResponse ) {
-          // get the contents from search data
-          isfetched = true;
-          $('.popup').detach().appendTo('.header-inner');
-          var datas = $( "entry", xmlResponse ).map(function() {
-            return {
-              title: $( "title", this ).text(),
-              content: $("content",this).text(),
-              url: $( "url" , this).text()
-            };
-          }).get();
-          var $input = document.getElementById(search_id);
-          var $resultContent = document.getElementById(content_id);
-          $input.addEventListener('input', function(){
-            var matchcounts = 0;
-            var str='<ul class=\"search-result-list\">';
-            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
-            $resultContent.innerHTML = "";
-            if (this.value.trim().length > 1) {
-              // perform local searching
-              datas.forEach(function(data) {
-                var isMatch = false;
-                var content_index = [];
-                var data_title = data.title.trim().toLowerCase();
-                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
-                var data_url = decodeURIComponent(data.url);
-                var index_title = -1;
-                var index_content = -1;
-                var first_occur = -1;
-                // only match artiles with not empty titles and contents
-                if(data_title != '') {
-                  keywords.forEach(function(keyword, i) {
-                    index_title = data_title.indexOf(keyword);
-                    index_content = data_content.indexOf(keyword);
-                    if( index_title >= 0 || index_content >= 0 ){
-                      isMatch = true;
-                      if (i == 0) {
-                        first_occur = index_content;
-                      }
-                    }
-
-                  });
-                }
-                // show search results
-                if (isMatch) {
-                  matchcounts += 1;
-                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
-                  var content = data.content.trim().replace(/<[^>]+>/g,"");
-                  if (first_occur >= 0) {
-                    // cut out 100 characters
-                    var start = first_occur - 20;
-                    var end = first_occur + 80;
-                    if(start < 0){
-                      start = 0;
-                    }
-                    if(start == 0){
-                      end = 50;
-                    }
-                    if(end > content.length){
-                      end = content.length;
-                    }
-                    var match_content = content.substring(start, end);
-                    // highlight all keywords
-                    keywords.forEach(function(keyword){
-                      var regS = new RegExp(keyword, "gi");
-                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
-                    });
-
-                    str += "<p class=\"search-result\">" + match_content +"...</p>"
-                  }
-                  str += "</li>";
-                }
-              })};
-            str += "</ul>";
-            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
-            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
-            $resultContent.innerHTML = str;
-          });
-          proceedsearch();
-        }
-      });}
-
-    // handle and trigger popup window;
-    $('.popup-trigger').click(function(e) {
-      e.stopPropagation();
-      if (isfetched == false) {
-        searchFunc(path, 'local-search-input', 'local-search-result');
-      } else {
-        proceedsearch();
+    
+    <script>
+      var cloudTieConfig = {
+        url: document.location.href, 
+        sourceId: "",
+        productKey: "aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s",
+        target: "cloud-tie-wrapper"
       };
-    });
+    </script>
+    <script src="https://img1.ws.126.net/f2e/tie/yun/sdk/loader.js"></script>
+  
 
-    $('.popup-btn-close').click(function(e){
-      $('.popup').hide();
-      $(".popoverlay").remove();
-      $('body').css('overflow', '');
-    });
-    $('.popup').click(function(e){
-      e.stopPropagation();
-    });
-  </script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
 
 
   
@@ -2109,7 +2016,6 @@
   
 
   
-
 
 </body>
 </html>
